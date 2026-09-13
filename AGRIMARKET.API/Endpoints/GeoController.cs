@@ -5,7 +5,7 @@ namespace AGRIMARKET.API.Endpoints
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AgriMarketController : ControllerBase 
+    public class GeoController : ControllerBase
     {
     }
 }
