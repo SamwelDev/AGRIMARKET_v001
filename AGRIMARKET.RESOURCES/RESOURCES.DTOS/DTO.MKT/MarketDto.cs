@@ -7,6 +7,10 @@ namespace AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.MKT;
 
 public  class MarketDto
 {
+    public long Id { get; set; }
+    public string? Name { get; set; }
+    public long? DistrictId { get; set; }
+    public ICollection<PriceDto> Prices { get; set; } = new HashSet<PriceDto>();
 }
 public class PriceDto
 {

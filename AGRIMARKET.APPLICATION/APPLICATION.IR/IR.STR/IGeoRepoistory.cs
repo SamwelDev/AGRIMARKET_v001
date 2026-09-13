@@ -15,4 +15,11 @@ public interface IGeoRepoistory
     Task DeleteRegionAsync(long Id, CancellationToken cancellation);
     #endregion
 
+    #region[DISTRICTS]
+    Task<DistictDto> GetDistrictByIdAsync(long Id);
+    Task<PaginatedResult<DistictDto>> GetAllDistrictsAsync(CancellationToken cancellation, int pageSize, int pageNum);
+    Task<long> AddNewDistrcictsAsync(DistictDto distcrict, CancellationToken cancellation);
+    Task DeleteDsistrictAsync(long Id, CancellationToken cancellation);
+    #endregion
+
 }
