@@ -12,4 +12,10 @@ public  interface IMktRepository
     Task<MarketDto> GetMarketByIdAsync(long Id);
     Task<long> AddNewMarketAsync(MarketDto market, CancellationToken cancellation);
     Task DeleteRegionAsync(long Id, CancellationToken cancellation);
-}
+
+
+    Task<long> AddNewCommodityAsync(CommodityDto market, CancellationToken cancellation);
+    Task<CommodityDto> GetCommodityByIdAsync(long Id);
+     Task<PaginatedResult<CommodityDto>> GetAllCommoditiesAsync(CancellationToken cancellation, int pageSize, int pageNum);
+    
+    }

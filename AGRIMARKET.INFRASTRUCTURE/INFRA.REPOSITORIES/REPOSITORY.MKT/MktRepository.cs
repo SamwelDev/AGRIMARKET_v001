@@ -104,5 +104,73 @@ public class MktRepository : IMktRepository
         await agriMarketContext.SaveChangesAsync(cancellation);
     }
     #endregion
+    #region[CMDTIES]
+    public async Task<PaginatedResult<CommodityDto>> GetAllCommoditiesAsync(CancellationToken cancellation, int pageSize, int pageNum)
+    {
+        if (pageNum < 1) pageNum = 1;
+        if (pageSize < 1) pageSize = 1;
+        var entity = agriMarketContext.Commodities.AsNoTracking();
+        var totalCount = await entity.CountAsync(cancellation);
+        var records = await entity.OrderByDescending(x => x.Id)
+            .Skip((pageNum - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new CommodityDto
+            {
+                Name = x.Name,
+                Prices = x.Prices.Select(ds => new PriceDto
+                {
+                    Price = ds.Price,
+                    PriceType = ds.PriceType,
+                    Curreny = ds.Curreny,
+                }).ToList(),
+            }).ToListAsync(cancellation);
+        return new PaginatedResult<CommodityDto>
+        {
+            pageNum = pageNum,
+            pageSize = pageSize,
+            totalCount = totalCount,
+            Data = records
+        };
+
+    }
+    public async Task<CommodityDto> GetCommodityByIdAsync(long Id)
+    {
+        if (Id < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(Id));
+        }
+        var data = await agriMarketContext.Markets.FirstOrDefaultAsync(x => x.Id == Id);
+        return new CommodityDto
+        {
+            Name = data?.Name,
+
+            Prices = data.Prices.Select(x => new PriceDto
+            {
+                PriceType = x.PriceType,
+                Curreny = x.Curreny,
+            }).ToList()
+        };
+    }
+    public async Task<long> AddNewCommodityAsync(CommodityDto market, CancellationToken cancellation)
+    {
+        if (string.IsNullOrWhiteSpace(market.Name))
+        {
+            throw new ArgumentNullException(nameof(market));
+        }
+        var entityData = new CommodityModel
+        {
+            Name = market.Name,
+            Prices = market.Prices.Select(ds => new PriceModel
+            {
+                Curreny = ds.Curreny,
+                PriceType = ds.PriceType,
+                Price = ds.Price,
+            }).ToList(),
+        };
+        await agriMarketContext.Commodities.AddRangeAsync(entityData);
+        await agriMarketContext.SaveChangesAsync(cancellation);
+        return market.Id;
+    }
+    #endregion
 
 }
