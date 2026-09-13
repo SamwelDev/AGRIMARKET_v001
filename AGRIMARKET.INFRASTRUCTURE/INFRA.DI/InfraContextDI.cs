@@ -12,7 +12,7 @@ public static class InfraContextDI
 {
     public static IServiceCollection AddInfraDI(this IServiceCollection services,IConfiguration configuration)
     {
-        var dbConnection = configuration.GetConnectionString("");
+        var dbConnection = configuration.GetConnectionString("DefaultDbDev");
         services.AddDbContext<AgriMarketContext>(opt => opt.UseSqlServer(dbConnection,useSplit =>
         {
             useSplit.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
