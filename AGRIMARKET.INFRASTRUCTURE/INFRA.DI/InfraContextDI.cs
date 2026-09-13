@@ -1,4 +1,6 @@
-﻿using AGRIMARKET.INFRASTRUCTURE.INFRA.CONTEXT;
+﻿using AGRIMARKET.APPLICATION.APPLICATION.IR.IR.STR;
+using AGRIMARKET.INFRASTRUCTURE.INFRA.CONTEXT;
+using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.RESPOSITORY.STR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,8 @@ public static class InfraContextDI
         {
             useSplit.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
         }));
+        //::Repositories CLUSTER:01
+        services.AddScoped<IGeoRepoistory, GeoRepository>();
         return services;
     }
 }
