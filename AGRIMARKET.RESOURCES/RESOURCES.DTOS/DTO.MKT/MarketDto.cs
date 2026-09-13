@@ -22,6 +22,7 @@ public class PriceDto
     public long SourceId { get; set; }
     public long? CommodityId { get; set; }
     public long? MarketId { get; set; }
+    public CommodityDto? Commodity { get; set; }
 
 }
 public class SourceDto
