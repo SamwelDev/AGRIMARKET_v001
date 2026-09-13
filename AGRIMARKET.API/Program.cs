@@ -1,3 +1,4 @@
+using AGRIMARKET.INFRASTRUCTURE.INFRA.DI;
 using Microsoft.AspNetCore.RateLimiting;
 using Scalar.AspNetCore;
 
@@ -6,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddInfraDI(builder.Configuration);
 builder.Services.AddRateLimiter(opt =>
 {
     opt.AddFixedWindowLimiter("Windows-Policy", limiter =>

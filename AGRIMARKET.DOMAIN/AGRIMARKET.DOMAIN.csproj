@@ -19,4 +19,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AGRIMARKET.RESOURCES\AGRIMARKET.RESOURCES.csproj" />
+  </ItemGroup>
+
 </Project>
