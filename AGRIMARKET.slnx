@@ -9,4 +9,7 @@
   <Folder Name="/Src/Src.Domain/">
     <Project Path="AGRIMARKET.DOMAIN/AGRIMARKET.DOMAIN.csproj" />
   </Folder>
+  <Folder Name="/Src/Src.Resources/">
+    <Project Path="AGRIMARKET.RESOURCES/AGRIMARKET.RESOURCES.csproj" />
+  </Folder>
 </Solution>
