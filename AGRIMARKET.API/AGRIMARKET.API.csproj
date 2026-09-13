@@ -8,6 +8,25 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Scalar.AspNetCore" Version="2.17.3" />
+    <PackageReference Include="Scalar.AspNetCore.Microsoft" Version="2.17.3" />
+    <PackageReference Include="Scalar.AspNetCore.Swashbuckle" Version="2.17.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AGRIMARKET.APPLICATION\AGRIMARKET.APPLICATION.csproj" />
+    <ProjectReference Include="..\AGRIMARKET.INFRASTRUCTURE\AGRIMARKET.INFRASTRUCTURE.csproj" />
+    <ProjectReference Include="..\AGRIMARKET.RESOURCES\AGRIMARKET.RESOURCES.csproj" />
   </ItemGroup>
 
 </Project>
