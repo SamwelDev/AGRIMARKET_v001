@@ -3,4 +3,7 @@
   <Folder Name="/Src/Src.API/">
     <Project Path="AGRIMARKET.API/AGRIMARKET.API.csproj" />
   </Folder>
+  <Folder Name="/Src/Src.Application/">
+    <Project Path="AGRIMARKET.APPLICATION/AGRIMARKET.APPLICATION.csproj" />
+  </Folder>
 </Solution>
