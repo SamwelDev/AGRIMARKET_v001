@@ -11,7 +11,7 @@ public class PriceModel
     public decimal Price { get; set; }
     public CurrenyEnum Curreny { get; set; } = CurrenyEnum.TZS;
     public PriceType PriceType { get; set; } = PriceType.RETAIL;
-    public DateTimeOffset RecordedAt { get; set; } = DateTimeOffset.Now;
+    public DateTimeOffset? RecordedAt { get; set; } = DateTimeOffset.Now;
 
     //Fr keys
     public long SourceId { get; set; }
