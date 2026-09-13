@@ -17,5 +17,16 @@ public  interface IMktRepository
     Task<long> AddNewCommodityAsync(CommodityDto market, CancellationToken cancellation);
     Task<CommodityDto> GetCommodityByIdAsync(long Id);
      Task<PaginatedResult<CommodityDto>> GetAllCommoditiesAsync(CancellationToken cancellation, int pageSize, int pageNum);
-    
+
+
+    Task<PriceDto> GetLatestAsync(CancellationToken cancellation);
+    Task<PaginatedResult<PriceDto>> GetPriceHistoryAsync(DateTime? from, DateTime? to, CancellationToken cancellation, int pageSize, int pageNum);
+    Task<CompareDto?> ComparePricesAsync(DateTime oldDate, DateTime newDate, CancellationToken cancellation);
+    Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation, int pageSize, int pageNum);
+    Task<PriceDto> GetPriceByIdAsync(long Id);
+    Task<long> AddNewPriceAsync(PriceDto market, CancellationToken cancellation);
+    Task DeletePricesAsync(long Id, CancellationToken cancellation);
+
+
+
     }

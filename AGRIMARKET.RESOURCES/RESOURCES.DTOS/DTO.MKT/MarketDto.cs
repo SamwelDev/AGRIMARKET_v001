@@ -18,7 +18,7 @@ public class PriceDto
     public decimal Price { get; set; }
     public CurrenyEnum Curreny { get; set; } = CurrenyEnum.TZS;
     public PriceType PriceType { get; set; } = PriceType.RETAIL;
-    public DateTimeOffset RecordedAt { get; set; } = DateTimeOffset.Now;
+    public DateTimeOffset? RecordedAt { get; set; } = DateTimeOffset.Now;
     public long SourceId { get; set; }
     public long? CommodityId { get; set; }
     public long? MarketId { get; set; }
@@ -40,4 +40,18 @@ public class CommodityDto
 
     public ICollection<PriceDto> Prices { get; set; } = new HashSet<PriceDto>();
 
+}
+
+public class CompareDto
+{
+    public string? PriceType { get; set; }
+
+    public decimal? OldPrice { get; set; }
+    public DateTimeOffset? OldRecordedAt { get; set; }
+
+    public decimal? NewPrice { get; set; }
+    public DateTimeOffset? NewRecordedAt { get; set; }
+
+    public decimal? Difference { get; set; }
+    public decimal? PercentageChange { get; set; }
 }
