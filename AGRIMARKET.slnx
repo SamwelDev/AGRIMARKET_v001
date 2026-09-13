@@ -6,4 +6,7 @@
   <Folder Name="/Src/Src.Application/">
     <Project Path="AGRIMARKET.APPLICATION/AGRIMARKET.APPLICATION.csproj" />
   </Folder>
+  <Folder Name="/Src/Src.Domain/">
+    <Project Path="AGRIMARKET.DOMAIN/AGRIMARKET.DOMAIN.csproj" />
+  </Folder>
 </Solution>
