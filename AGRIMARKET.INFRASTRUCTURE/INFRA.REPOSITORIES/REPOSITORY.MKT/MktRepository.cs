@@ -3,6 +3,7 @@ using AGRIMARKET.DOMAIN.DOMAIN.MODELS.MODEL.MKT;
 using AGRIMARKET.DOMAIN.DOMAIN.MODELS.MODEL.STR;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.CONTEXT;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.RESPOSITORY.STR;
+using AGRIMARKET.RESOURCES.RESOURCE.ENUMS;
 using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.MKT;
 using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.STR;
 using AGRIMARKET.RESOURCES.RESOURCES.DTOS.RESOURCES.HELPERS.HELPER.PAGINATION;
@@ -40,6 +41,8 @@ public class MktRepository : IMktRepository
                 Name = x.Name,
                 Prices = x.Prices.Select(ds => new PriceDto
                 {
+                    MaxPrice = ds.MaxPrice,
+                    MinPrice = ds.MinPrice,
                     Price = ds.Price,
                     PriceType = ds.PriceType,
                     Curreny = ds.Curreny,
@@ -85,6 +88,8 @@ public class MktRepository : IMktRepository
             {
                 Curreny = ds.Curreny,
                 PriceType =ds.PriceType,
+                MaxPrice = ds.MaxPrice,
+                MinPrice = ds.MinPrice,
                 Price = ds.Price,
             }).ToList(),
         };
@@ -120,6 +125,8 @@ public class MktRepository : IMktRepository
                 Name = x.Name,
                 Prices = x.Prices.Select(ds => new PriceDto
                 {
+                    MaxPrice = ds.MaxPrice,
+                    MinPrice = ds.MinPrice,
                     Price = ds.Price,
                     PriceType = ds.PriceType,
                     Curreny = ds.Curreny,
@@ -165,6 +172,8 @@ public class MktRepository : IMktRepository
             {
                 Curreny = ds.Curreny,
                 PriceType = ds.PriceType,
+                MaxPrice = ds.MaxPrice,
+                MinPrice = ds.MinPrice,
                 Price = ds.Price,
             }).ToList(),
         };
@@ -186,6 +195,8 @@ public class MktRepository : IMktRepository
         {
             Curreny = data.Curreny,
             PriceType = data.PriceType,
+            MaxPrice = data.MaxPrice,
+            MinPrice = data.MinPrice,
             Price = data.Price,
             RecordedAt = data.RecordedAt
         };
@@ -221,7 +232,8 @@ public class MktRepository : IMktRepository
             .Select(x => new PriceDto
             {
                 Id = x.Id,
-                Price = x.Price,
+                MaxPrice = x.MaxPrice,
+                MinPrice = x.MinPrice,
                 Curreny = x.Curreny,
                 PriceType = x.PriceType,
                 RecordedAt = x.RecordedAt
@@ -237,44 +249,68 @@ public class MktRepository : IMktRepository
         };
     }
 
-    public async Task<CompareDto?> ComparePricesAsync(DateTime oldDate,DateTime newDate,CancellationToken cancellation)
+    public async Task<CompareDto?> ComparePricesAsync(long commodityId,long marketId,DateTimeOffset oldDate,DateTimeOffset newDate,PriceType priceType,CancellationToken cancellation)
     {
         var oldPrice = await agriMarketContext.Prices
             .AsNoTracking()
-            .Where(x => x.RecordedAt <= oldDate)
+            .Where(x =>
+                x.CommodityId == commodityId &&
+                x.MarketId == marketId &&
+                x.PriceType == priceType &&
+                x.RecordedAt <= oldDate)
             .OrderByDescending(x => x.RecordedAt)
             .FirstOrDefaultAsync(cancellation);
 
         var newPrice = await agriMarketContext.Prices
             .AsNoTracking()
-            .Where(x => x.RecordedAt <= newDate)
+            .Where(x =>
+                x.CommodityId == commodityId &&
+                x.MarketId == marketId &&
+                x.PriceType == priceType &&
+                x.RecordedAt <= newDate)
             .OrderByDescending(x => x.RecordedAt)
             .FirstOrDefaultAsync(cancellation);
 
         if (oldPrice == null || newPrice == null)
             return null;
 
-        var difference = newPrice.Price - oldPrice.Price;
-
-        decimal? percentageChange = null;
-
-        if (oldPrice.Price != 0)
-        {
-            percentageChange =
-                (difference / oldPrice.Price) * 100;
-        }
-
         return new CompareDto
         {
+            PriceType = newPrice.PriceType.ToString(),
+
+            // Price
             OldPrice = oldPrice.Price,
-            OldRecordedAt = oldPrice.RecordedAt,
             NewPrice = newPrice.Price,
-            NewRecordedAt = newPrice.RecordedAt,
-            Difference = difference,
-            PercentageChange = percentageChange
+            PriceDifference = newPrice.Price - oldPrice.Price,
+            PricePercentageChange =
+                CalculatePercentageChange(
+                    oldPrice.Price,
+                    newPrice.Price),
+
+            // Minimum
+            OldMinPrice = oldPrice.MinPrice,
+            NewMinPrice = newPrice.MinPrice,
+            MinPriceDifference =
+                newPrice.MinPrice - oldPrice.MinPrice,
+            MinPricePercentageChange =
+                CalculatePercentageChange(
+                    oldPrice.MinPrice,
+                    newPrice.MinPrice),
+
+            // Maximum
+            OldMaxPrice = oldPrice.MaxPrice,
+            NewMaxPrice = newPrice.MaxPrice,
+            MaxPriceDifference =
+                newPrice.MaxPrice - oldPrice.MaxPrice,
+            MaxPricePercentageChange =
+                CalculatePercentageChange(
+                    oldPrice.MaxPrice,
+                    newPrice.MaxPrice),
+
+            OldRecordedAt = oldPrice.RecordedAt,
+            NewRecordedAt = newPrice.RecordedAt
         };
     }
-
     public async Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation, int pageSize, int pageNum)
     {
         if (pageNum < 1) pageNum = 1;
@@ -286,6 +322,8 @@ public class MktRepository : IMktRepository
             .Take(pageSize)
             .Select(x => new PriceDto
             {
+                MaxPrice = x.MaxPrice,
+                MinPrice = x.Price,
                 Price = x.Price,
                 Curreny = x.Curreny,
                 PriceType = x.PriceType,
@@ -309,14 +347,20 @@ public class MktRepository : IMktRepository
         var data = await agriMarketContext.Prices.FirstOrDefaultAsync(x => x.Id == Id);
         return new PriceDto
         {
+            MaxPrice = data.MaxPrice,
             Price = data.Price,
+            MinPrice = data.MinPrice,
             Curreny = data.Curreny,
             PriceType = data.PriceType,
         };
     }
     public async Task<long> AddNewPriceAsync(PriceDto market, CancellationToken cancellation)
     {
-        if (market.Price>0)
+        if (market.MaxPrice>0)
+        {
+            throw new ArgumentNullException(nameof(market));
+        }
+        if (market.MaxPrice > 0)
         {
             throw new ArgumentNullException(nameof(market));
         }
@@ -325,6 +369,8 @@ public class MktRepository : IMktRepository
             Curreny = market.Curreny,
             PriceType = market.PriceType,
             RecordedAt = market.RecordedAt,
+            MaxPrice = market.MaxPrice,
+            MinPrice = market.MinPrice,
             Price = market.Price,
             
         };
@@ -343,6 +389,16 @@ public class MktRepository : IMktRepository
         if (deleteData != null)
             agriMarketContext.Prices.RemoveRange(deleteData);
         await agriMarketContext.SaveChangesAsync(cancellation);
+    }
+    #endregion
+
+    #region[Others]
+    private static decimal? CalculatePercentageChange(decimal oldValue,decimal newValue)
+    {
+        if (oldValue == 0)
+            return null;
+
+        return ((newValue - oldValue) / oldValue) * 100;
     }
     #endregion
 

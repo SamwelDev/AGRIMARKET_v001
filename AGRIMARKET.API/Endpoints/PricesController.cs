@@ -1,4 +1,5 @@
 ﻿using AGRIMARKET.APPLICATION.APPLICATION.IR.IR.MKT;
+using AGRIMARKET.RESOURCES.RESOURCE.ENUMS;
 using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.MKT;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,14 @@ namespace AGRIMARKET.API.Endpoints
         {
             var newPrice = await mktRepository.AddNewPriceAsync(dto,cancellation);
             return Ok(newPrice);
+        }
+        [EnableRateLimiting("Windows-Policy")]
+        [HttpGet]
+        [Route("prices-comparison/{marketId:long}/{itemId:long}")]
+        public async Task<IActionResult> ComparePrices(long itemId,long marketId, DateTimeOffset oldDate, DateTimeOffset newDate, PriceType priceType, CancellationToken cancellation)
+        {
+            var priceCompare = await mktRepository.ComparePricesAsync(itemId,marketId,oldDate,newDate,priceType,cancellation);
+            return Ok(priceCompare);
         }
 
     }

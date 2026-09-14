@@ -1,4 +1,5 @@
-﻿using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.MKT;
+﻿using AGRIMARKET.RESOURCES.RESOURCE.ENUMS;
+using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.MKT;
 using AGRIMARKET.RESOURCES.RESOURCES.DTOS.RESOURCES.HELPERS.HELPER.PAGINATION;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,8 @@ public  interface IMktRepository
 
     Task<PriceDto> GetLatestAsync(CancellationToken cancellation);
     Task<PaginatedResult<PriceDto>> GetPriceHistoryAsync(DateTime? from, DateTime? to, CancellationToken cancellation, int pageSize, int pageNum);
-    Task<CompareDto?> ComparePricesAsync(DateTime oldDate, DateTime newDate, CancellationToken cancellation);
+    //Task<CompareDto?> ComparePricesAsync(DateTime oldDate, DateTime newDate, CancellationToken cancellation);
+    Task<CompareDto?> ComparePricesAsync(long commodityId, long marketId, DateTimeOffset oldDate, DateTimeOffset newDate, PriceType priceType, CancellationToken cancellation);
     Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation, int pageSize, int pageNum);
     Task<PriceDto> GetPriceByIdAsync(long Id);
     Task<long> AddNewPriceAsync(PriceDto market, CancellationToken cancellation);
