@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AGRIMARKET.RESOURCES.RESOURCES.DTOS.RESOURCES.HELPERS.HELPER.PAGINATION;
+namespace AGRIMARKET.RESOURCES.RESOURCES.HELPERS.HELPER.PAGINATION;
 
 public  class PaginatedResult<T>
 {
