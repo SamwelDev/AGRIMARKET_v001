@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace AGRIMARKET.INFRASTRUCTURE.INFRA.SV;
 
@@ -19,39 +20,27 @@ public  class NuktaConfigurationClient : INuktaConfigurationClieant
         _configuration = configuration;
     }
 
-    public async Task<IReadOnlyList<NuktaCommodityPriceDto>>GetCommodityPricesAsync(DateTime? date = null,CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<NuktaCommodityPriceDto>> GetCommodityPricesAsync(
+    DateTime? date = null,
+    CancellationToken cancellationToken = default)
     {
-        var endpoint =_configuration["Nukta:CommodityEndpoint"];
-        if (string.IsNullOrWhiteSpace(endpoint))
-            throw new InvalidOperationException(
-                "Nukta commodity endpoint is not configured.");
-
-        var url = endpoint;
+        var endpoint = "api/commodities";
 
         if (date.HasValue)
         {
-            url += $"?date={date.Value:yyyy-MM-dd}";
+            endpoint += $"?date={date.Value:yyyy-MM-dd}";
         }
 
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            url);
-
-        var apiKey = _configuration["Nukta:ApiKey"];
-
-        if (!string.IsNullOrWhiteSpace(apiKey))
-        {
-            request.Headers.Add(
-                "X-API-Key",
-                apiKey);
-        }
-
-        var response = await _httpClient.SendAsync(
-            request,
+        var response = await _httpClient.GetAsync(
+            endpoint,
             cancellationToken);
 
         response.EnsureSuccessStatusCode();
-        var data = await response.Content.ReadFromJsonAsync<List<NuktaCommodityPriceDto>>(cancellationToken: cancellationToken);
-        return data ?? [];
+
+        var result = await response.Content.ReadFromJsonAsync<NuktaCommodityResponseDto>(
+            cancellationToken);
+
+        return result?.Data?.Nafaka ?? [];
     }
+
 }

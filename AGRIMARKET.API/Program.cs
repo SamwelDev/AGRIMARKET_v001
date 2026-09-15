@@ -1,4 +1,6 @@
+using AGRIMARKET.APPLICATION.APPLICATION.IS.IS.EXTAPI;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.DI;
+using AGRIMARKET.INFRASTRUCTURE.INFRA.SV;
 using Microsoft.AspNetCore.RateLimiting;
 using Scalar.AspNetCore;
 
@@ -8,6 +10,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddInfraDI(builder.Configuration);
+builder.Services.AddHttpClient<INuktaConfigurationClieant, NuktaConfigurationClient>(
+    (serviceProvider, client) =>
+    {
+        var configuration =
+            serviceProvider.GetRequiredService<IConfiguration>();
+
+        var baseUrl =
+            configuration["Nukta:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(baseUrl))
+            throw new InvalidOperationException(
+                "Nukta BaseUrl is not configured.");
+
+        client.BaseAddress = new Uri(baseUrl);
+
+        client.Timeout = TimeSpan.FromSeconds(30);
+    });
 builder.Services.AddRateLimiter(opt =>
 {
     opt.AddFixedWindowLimiter("Windows-Policy", limiter =>

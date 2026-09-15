@@ -1,5 +1,7 @@
 ﻿using AGRIMARKET.APPLICATION.APPLICATION.IR.IR.MKT;
 using AGRIMARKET.APPLICATION.APPLICATION.IR.IR.STR;
+using AGRIMARKET.APPLICATION.APPLICATION.SERVICES.SERVICES.IS;
+using AGRIMARKET.INFRASTRUCTURE.INFRA.AUTO;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.CONTEXT;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.REPOSITORY.MKT;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.RESPOSITORY.STR;
@@ -24,6 +26,9 @@ public static class InfraContextDI
         //::Repositories CLUSTER:01
         services.AddScoped<IGeoRepoistory, GeoRepository>();
         services.AddScoped<IMktRepository, MktRepository>();
+
+        // CLUSTER 02
+        services.AddScoped<IExternalDataImpoter, ExternalDataImporterService>();
         return services;
     }
 }
