@@ -1,8 +1,5 @@
 <Solution>
   <Folder Name="/Src/" />
-  <Folder Name="/Src/Src.API/">
-    <Project Path="AGRIMARKET.API/AGRIMARKET.API.csproj" />
-  </Folder>
   <Folder Name="/Src/Src.Application/">
     <Project Path="AGRIMARKET.APPLICATION/AGRIMARKET.APPLICATION.csproj" />
   </Folder>
@@ -11,6 +8,13 @@
   </Folder>
   <Folder Name="/Src/Src.Infrastructure/">
     <Project Path="AGRIMARKET.INFRASTRUCTURE/AGRIMARKET.INFRASTRUCTURE.csproj" />
+  </Folder>
+  <Folder Name="/Src/Src.Presentation/" />
+  <Folder Name="/Src/Src.Presentation/Src.API/">
+    <Project Path="AGRIMARKET.API/AGRIMARKET.API.csproj" />
+  </Folder>
+  <Folder Name="/Src/Src.Presentation/Src.Web/">
+    <Project Path="AGRIMARKET.WEB/AGRIMARKET.WEB.csproj" Id="8117aeb3-3d6d-41aa-978e-8a020f4bb562" />
   </Folder>
   <Folder Name="/Src/Src.Resources/">
     <Project Path="AGRIMARKET.RESOURCES/AGRIMARKET.RESOURCES.csproj" />
