@@ -187,16 +187,12 @@ code {
     .filter-group select {
         width: 100%;
         border: 1px solid #c7ddc6;
-        /*border-radius: 10px;*/
+        border-radius: 10px;
         padding: 8px 10px;
         background: #f7fff4;
         color: #365344;
         outline: none;
     }
-
-
-/* SUMMARY */
-
 .summary-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);

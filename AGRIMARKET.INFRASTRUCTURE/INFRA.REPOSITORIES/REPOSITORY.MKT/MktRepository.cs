@@ -311,9 +311,7 @@ public class MktRepository : IMktRepository
             NewRecordedAt = newPrice.RecordedAt
         };
     }
-    public async Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation,
-   int pageNum,
-        int pageSize)
+    public async Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation,int pageNum,int pageSize)
     {
         if (pageNum < 1)
             pageNum = 1;
@@ -337,11 +335,9 @@ public class MktRepository : IMktRepository
                 MaxPrice = x.MaxPrice,
                 MinPrice = x.MinPrice,
                 Price = x.Price,
-
                 Curreny = x.Curreny,
                 PriceType = x.PriceType,
                 RecordedAt = x.RecordedAt,
-
                 SourceId = x.SourceId,
                 CommodityId = x.CommodityId,
                 MarketId = x.MarketId,

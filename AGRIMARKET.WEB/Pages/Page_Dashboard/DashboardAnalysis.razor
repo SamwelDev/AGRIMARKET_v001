@@ -3,7 +3,7 @@
 @inject IApiMarketService service
 @inject ILogger<DashboardAnalysis> logger
 @layout DashboardLayout
-<PageTitle>AgriMarket Tanzania</PageTitle>
+<PageTitle>AgriMarket | Dash:Analysis</PageTitle>
 
 <div class="py-3 px-4">
     @if (loading)
@@ -39,34 +39,25 @@
 
             </div>
             <div class="dashboard-filters">
-
                 <div class="filter-group">
                     <label>Region</label>
 
-                    <select @bind="selectedRegion">
-                        <option value="">All</option>
-
+                    <select @bind="selectedRegion" @bind:after="RegionChanged">
+                        <option value="">All regions</option>
                         @foreach (var region in Regions)
                         {
-                            <option value="@region">
-                                @region
-                            </option>
+                            <option value="@region">@region</option>
                         }
                     </select>
+
                 </div>
-
-
                 <div class="filter-group">
                     <label>Market</label>
-
                     <select @bind="selectedMarket">
-                        <option value="">All</option>
-
+                        <option value="">All markets</option>
                         @foreach (var market in Markets)
                         {
-                            <option value="@market">
-                                @market
-                            </option>
+                            <option value="@market">@market</option>
                         }
                     </select>
                 </div>
@@ -76,13 +67,11 @@
                     <label>Commodity</label>
 
                     <select @bind="selectedCommodity">
-                        <option value="">All</option>
+                        <option value="">All commodities</option>
 
                         @foreach (var commodity in Commodities)
                         {
-                            <option value="@commodity">
-                                @commodity
-                            </option>
+                            <option value="@commodity"> @commodity</option>
                         }
                     </select>
                 </div>
@@ -237,14 +226,13 @@
 
     private bool loading = true;
     private List<PriceDto> prices = [];
+    private List<RegionDto> regions = [];
     private string selectedRegion = "";
     private string selectedMarket = "";
     private string selectedCommodity = "";
     private IEnumerable<PriceDto> FilteredPrices =>
         prices.Where(x =>
-            (string.IsNullOrWhiteSpace(selectedRegion) ||
-             x.Region == selectedRegion)
-            &&
+          
             (string.IsNullOrWhiteSpace(selectedMarket) ||
              x.Market == selectedMarket)
             &&
@@ -281,21 +269,28 @@
             .Distinct()
             .Count();
 
+    private void RegionChanged()
+    {
+        selectedMarket = "";
+        selectedCommodity = "";
+    }
 
-    private IEnumerable<string> Regions =>
-        prices
-            .Select(x => x.Region)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct()
-            .OrderBy(x => x);
 
 
     private IEnumerable<string> Markets =>
-        prices
-            .Select(x => x.Market)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct()
-            .OrderBy(x => x);
+     regions
+         .Where(r =>
+             string.IsNullOrWhiteSpace(selectedRegion) ||
+             string.Equals(
+                 r.Name?.Trim(),
+                 selectedRegion.Trim(),
+                 StringComparison.OrdinalIgnoreCase))
+         .SelectMany(r => r.Districts)
+         .SelectMany(d => d.Markets)
+         .Select(m => m.Name)
+         .Where(x => !string.IsNullOrWhiteSpace(x))
+         .Distinct()
+         .OrderBy(x => x);
 
 
     private IEnumerable<string> Commodities =>
@@ -310,60 +305,45 @@
         prices.Count == 0
             ? DateTimeOffset.MinValue
             : prices.Max(x => x.RecordedAt);
+    private IEnumerable<string> Regions =>
+        regions
+            .Select(x => x.Name)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x);
 
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            logger.LogInformation(
-                "========== START DASHBOARD PRICE LOAD ==========");
-
-            logger.LogInformation(
-                "Calling GetPricesAsync with PageNum={PageNum}, PageSize={PageSize}",
-                1,
-                100);
+            
 
             var response = await service.GetPricesAsync(
                 pageNum: 1,
                 pageSize: 100);
 
-            logger.LogInformation(
-                "Response is null: {IsNull}",
-                response == null);
-
-            logger.LogInformation(
-                "Response Data is null: {IsNull}",
-                response?.Data == null);
-
-            logger.LogInformation(
-                "Response Data Count: {Count}",
-                response?.Data?.Count ?? 0);
+            var regionResponse = await service.GetRegionsAsync(
+                pageNum: 1,
+                pageSize: 50);
 
             prices = response?.Data ?? new List<PriceDto>();
 
+            regions = regionResponse?.Data ?? new List<RegionDto>();
+
             logger.LogInformation(
-                "Prices assigned to UI: {Count}",
+                "Prices loaded: {Count}",
                 prices.Count);
 
-            if (prices.Count > 0)
-            {
-                logger.LogInformation(
-                    "First UI price: Id={Id}, Commodity={Commodity}, Market={Market}, Price={Price}",
-                    prices[0].Id,
-                    prices[0].Commodity,
-                    prices[0].Market,
-                    prices[0].Price);
-            }
-
             logger.LogInformation(
-                "========== END DASHBOARD PRICE LOAD ==========");
+                "Regions loaded: {Count}",
+                regions.Count);
         }
         catch (Exception ex)
         {
             logger.LogError(
                 ex,
-                "========== DASHBOARD PRICE LOAD FAILED ==========");
+                "Error loading dashboard data");
         }
         finally
         {

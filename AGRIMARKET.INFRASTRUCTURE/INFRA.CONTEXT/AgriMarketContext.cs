@@ -13,9 +13,11 @@ public class AgriMarketContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<DistrictModel>().HasOne(d => d.Region).WithMany(r => r.Districts).HasForeignKey(d => d.RegionModelId);
+
     }
 
-    //DbSets ..
+    //DbSets ..STR
     public DbSet<RegionModel> Regions { get; set; }
     public DbSet<DistrictModel> Districts { get; set; }
     //Markets

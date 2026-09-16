@@ -27,24 +27,47 @@ public  class GeoRepository : IGeoRepoistory
 
     }
     #region[Regions]
-    public async Task<PaginatedResult<RegionDto>> GetAllRegionsAsync(CancellationToken cancellation, int pageSize, int pageNum)
+    public async Task<PaginatedResult<RegionDto>> GetAllRegionsAsync(CancellationToken cancellation,int pageSize, int pageNum)
     {
-        if (pageNum < 1) pageNum = 1;
-        if (pageSize < 1) pageSize = 1;
-        var entity = agriMarketContext.Regions.AsNoTracking();
-        var totalCount = await entity.CountAsync(cancellation);
-        var records = await entity.OrderByDescending(x => x.Id)
-            .Skip((pageNum - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new RegionDto
-            {
-                Name = x.Name,
-                Districts = x.Districts.Select(ds => new DistictDto
-                {
-                    Name = ds.Name,
+        if (pageNum < 1)
+            pageNum = 1;
 
-                }).ToList(),
-            }).ToListAsync(cancellation);
+        if (pageSize < 1)
+            pageSize = 1;
+
+        var query = agriMarketContext.Regions
+            .AsNoTracking();
+
+        var totalCount = await query.CountAsync(cancellation);
+
+        var records = await query
+     .OrderByDescending(x => x.Id)
+     .Skip((pageNum - 1) * pageSize)
+     .Take(pageSize)
+     .Select(x => new RegionDto
+     {
+         Id = x.Id,
+         Name = x.Name,
+
+         Districts = x.Districts
+             .Select(ds => new DistictDto
+             {
+                 Id = ds.Id,
+                 Name = ds.Name,
+
+                 Markets = ds.Markets
+                     .Select(m => new MarketDto
+                     {
+                         Id = m.Id,
+                         Name = m.Name
+                     })
+                     .ToList()
+             })
+             .ToList()
+     })
+     .ToListAsync(cancellation);
+
+
         return new PaginatedResult<RegionDto>
         {
             pageNum = pageNum,
@@ -52,8 +75,8 @@ public  class GeoRepository : IGeoRepoistory
             totalCount = totalCount,
             Data = records
         };
-
     }
+
     public async Task<RegionDto> GetRegionByIdAsync(long Id)
     {
         if (Id < 1)

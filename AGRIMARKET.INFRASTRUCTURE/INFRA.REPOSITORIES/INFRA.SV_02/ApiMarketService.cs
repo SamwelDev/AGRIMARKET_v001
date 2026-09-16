@@ -28,7 +28,7 @@ public class ApiMarketService : IApiMarketService
     }
     public async Task<PaginatedResult<RegionDto>?> GetRegionsAsync(int pageNum =1,int pageSize=50, CancellationToken cancellationToken = default)
     {
-        var _url = $"api/Prices/get-all-regions?pageNum={pageNum}&pageSize={pageSize}";
+        var _url = $"api/Geo/get-all-regions?pageNum={pageNum}&pageSize={pageSize}";
         var data = await _http.GetFromJsonAsync<PaginatedResult<RegionDto>>(_url, cancellationToken);
         return data;
     }

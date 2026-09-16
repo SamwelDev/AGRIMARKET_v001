@@ -25,9 +25,11 @@ namespace AGRIMARKET.API.Endpoints
         [Route("get-all-regions")]
         public async Task<IActionResult> GetAllReagions(CancellationToken cancellation,int pageNum,int pageSize)
         {
-            var regionData = await geoRepoistory.GetAllRegionsAsync(cancellation, pageNum, pageSize);
+            var regionData = await geoRepoistory.GetAllRegionsAsync(cancellation: cancellation,pageSize: pageSize,pageNum: pageNum);
+
             return Ok(regionData);
         }
+
         [EnableRateLimiting("Windows-Policy")]
         [HttpPost]
         [Route("add-New-Region")]

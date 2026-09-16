@@ -17,6 +17,8 @@ public class DistictDto
 {
     public long Id { get; set; }
     public string? Name { get; set; }
+    public long? RegionId { get; set; }
+    //Fr keys
     //Collection
     public ICollection<MarketDto> Markets { get; set; } = new HashSet<MarketDto>();
 }
