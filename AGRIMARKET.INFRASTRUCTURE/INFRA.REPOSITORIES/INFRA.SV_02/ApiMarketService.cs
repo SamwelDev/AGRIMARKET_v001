@@ -1,5 +1,6 @@
 ﻿using AGRIMARKET.APPLICATION.APPLICATION.SERVICES.SERVICE.IS_02;
 using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.MKT;
+using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.STR;
 using AGRIMARKET.RESOURCES.RESOURCES.HELPERS.HELPER.PAGINATION;
 using AGRIMARKET.RESOURCES.RESOURCES.RESPONSE;
 using System;
@@ -25,6 +26,11 @@ public class ApiMarketService : IApiMarketService
         var result = await _http.GetFromJsonAsync<PaginatedResult<PriceDto>>(url,cancellationToken);
        return result;
     }
-
+    public async Task<PaginatedResult<RegionDto>?> GetRegionsAsync(int pageNum =1,int pageSize=50, CancellationToken cancellationToken = default)
+    {
+        var _url = $"api/Prices/get-all-regions?pageNum={pageNum}&pageSize={pageSize}";
+        var data = await _http.GetFromJsonAsync<PaginatedResult<RegionDto>>(_url, cancellationToken);
+        return data;
+    }
 
 }
