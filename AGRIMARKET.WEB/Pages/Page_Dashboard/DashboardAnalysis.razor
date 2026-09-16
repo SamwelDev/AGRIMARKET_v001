@@ -1,6 +1,374 @@
 ﻿@page "/"
-<h3>DashboardAnalysis</h3>
+@page "/AgriMkt/Dash"
+@inject IApiMarketService service
+@inject ILogger<DashboardAnalysis> logger
+@layout DashboardLayout
+<PageTitle>AgriMarket Tanzania</PageTitle>
+
+<div class="py-3 px-4">
+    @if (loading)
+    {
+        <div class="dashboard-loading">
+            <div class="spinner-border"></div>
+            <p>Loading market prices...</p>
+        </div>
+    }
+    else if (prices.Count == 0)
+    {
+        <div class="alert alert-warning">
+            No market price data available.
+        </div>
+    }
+    else
+    {
+        <div class="agrimarket-dashboard">
+
+            <div class="dashboard-header">
+
+                <div>
+                    <h1> AgriMarket Tanzania</h1>
+                    <p>Daily Agriculture Price Trends</p>
+                </div>
+
+                <div>
+                    <small>Last Updated</small>
+                    <strong class="badge bg-success">
+                        @LastUpdated.ToString("dd MMM yyyy")
+                    </strong>
+                </div>
+
+            </div>
+            <div class="dashboard-filters">
+
+                <div class="filter-group">
+                    <label>Region</label>
+
+                    <select @bind="selectedRegion">
+                        <option value="">All</option>
+
+                        @foreach (var region in Regions)
+                        {
+                            <option value="@region">
+                                @region
+                            </option>
+                        }
+                    </select>
+                </div>
+
+
+                <div class="filter-group">
+                    <label>Market</label>
+
+                    <select @bind="selectedMarket">
+                        <option value="">All</option>
+
+                        @foreach (var market in Markets)
+                        {
+                            <option value="@market">
+                                @market
+                            </option>
+                        }
+                    </select>
+                </div>
+
+
+                <div class="filter-group">
+                    <label>Commodity</label>
+
+                    <select @bind="selectedCommodity">
+                        <option value="">All</option>
+
+                        @foreach (var commodity in Commodities)
+                        {
+                            <option value="@commodity">
+                                @commodity
+                            </option>
+                        }
+                    </select>
+                </div>
+
+            </div>
+            <div class="summary-grid">
+
+                <div class="summary-card">
+
+                    <div class="summary-value">
+                        TZS @AverageMaxPrice.ToString("N0")
+                    </div>
+
+                    <div class="summary-label">
+                        Avg Max Price
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-value">
+                        TZS @AverageMinPrice.ToString("N0")
+                    </div>
+
+                    <div class="summary-label">
+                        Avg Min Price
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-value commodity-value">
+                        @TopCommodity
+                    </div>
+
+                    <div class="summary-label">
+                        Top Commodity
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-value">
+                        @CommodityCount
+                    </div>
+
+                    <div class="summary-label">
+                        Commodity Count
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="dashboard-panel">
+
+                <div class="panel-title">
+                    Latest Agriculture Prices
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table">
+
+                        <thead>
+                            <tr>
+                                <th>Commodity</th>
+                                <th>Market</th>
+                                <th>District</th>
+                                <th>Region</th>
+                                <th>Unit</th>
+                                <th>Min</th>
+                                <th>Price</th>
+                                <th>Max</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in FilteredPrices)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            @item.Commodity
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        @item.Market
+                                    </td>
+
+                                    <td>
+                                        @item.District
+                                    </td>
+
+                                    <td>
+                                        @item.Region
+                                    </td>
+
+                                    <td>
+                                        @item.Unit
+                                    </td>
+
+                                    <td>
+                                        @item.MinPrice.ToString("N0")
+                                    </td>
+
+                                    <td class="price">
+                                        @item.Price.ToString("N0")
+                                    </td>
+
+                                    <td>
+                                        @item.MaxPrice.ToString("N0")
+                                    </td>
+
+                                    <td>
+                                        @item.PriceType
+                                    </td>
+
+                                    <td>
+                                        @item.RecordedAt.ToString("dd MMM yyyy")
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+</div>
+
+
+
 
 @code {
+
+    private bool loading = true;
+    private List<PriceDto> prices = [];
+    private string selectedRegion = "";
+    private string selectedMarket = "";
+    private string selectedCommodity = "";
+    private IEnumerable<PriceDto> FilteredPrices =>
+        prices.Where(x =>
+            (string.IsNullOrWhiteSpace(selectedRegion) ||
+             x.Region == selectedRegion)
+            &&
+            (string.IsNullOrWhiteSpace(selectedMarket) ||
+             x.Market == selectedMarket)
+            &&
+            (string.IsNullOrWhiteSpace(selectedCommodity) ||
+             x.Commodity == selectedCommodity));
+
+
+    private decimal AverageMaxPrice =>
+        FilteredPrices.Any()
+            ? FilteredPrices.Average(x => x.MaxPrice)
+            : 0;
+
+
+    private decimal AverageMinPrice =>
+        FilteredPrices.Any()
+            ? FilteredPrices.Average(x => x.MinPrice)
+            : 0;
+
+
+    private string TopCommodity =>
+        FilteredPrices
+            .Where(x => !string.IsNullOrWhiteSpace(x.Commodity))
+            .GroupBy(x => x.Commodity)
+            .OrderByDescending(x => x.Count())
+            .Select(x => x.Key)
+            .FirstOrDefault()
+            ?? "-";
+
+
+    private int CommodityCount =>
+        FilteredPrices
+            .Select(x => x.Commodity)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .Count();
+
+
+    private IEnumerable<string> Regions =>
+        prices
+            .Select(x => x.Region)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x);
+
+
+    private IEnumerable<string> Markets =>
+        prices
+            .Select(x => x.Market)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x);
+
+
+    private IEnumerable<string> Commodities =>
+        prices
+            .Select(x => x.Commodity)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x);
+
+
+    private DateTimeOffset LastUpdated =>
+        prices.Count == 0
+            ? DateTimeOffset.MinValue
+            : prices.Max(x => x.RecordedAt);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            logger.LogInformation(
+                "========== START DASHBOARD PRICE LOAD ==========");
+
+            logger.LogInformation(
+                "Calling GetPricesAsync with PageNum={PageNum}, PageSize={PageSize}",
+                1,
+                100);
+
+            var response = await service.GetPricesAsync(
+                pageNum: 1,
+                pageSize: 100);
+
+            logger.LogInformation(
+                "Response is null: {IsNull}",
+                response == null);
+
+            logger.LogInformation(
+                "Response Data is null: {IsNull}",
+                response?.Data == null);
+
+            logger.LogInformation(
+                "Response Data Count: {Count}",
+                response?.Data?.Count ?? 0);
+
+            prices = response?.Data ?? new List<PriceDto>();
+
+            logger.LogInformation(
+                "Prices assigned to UI: {Count}",
+                prices.Count);
+
+            if (prices.Count > 0)
+            {
+                logger.LogInformation(
+                    "First UI price: Id={Id}, Commodity={Commodity}, Market={Market}, Price={Price}",
+                    prices[0].Id,
+                    prices[0].Commodity,
+                    prices[0].Market,
+                    prices[0].Price);
+            }
+
+            logger.LogInformation(
+                "========== END DASHBOARD PRICE LOAD ==========");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "========== DASHBOARD PRICE LOAD FAILED ==========");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
 
 }

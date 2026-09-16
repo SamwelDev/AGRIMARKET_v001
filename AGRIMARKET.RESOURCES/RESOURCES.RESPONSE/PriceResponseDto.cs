@@ -7,7 +7,7 @@ namespace AGRIMARKET.RESOURCES.RESOURCES.RESPONSE;
 
 public  class PriceResponseDto
 {
-    public List<PriceDto> Data { get; set; } = [];
+    public List<PriceDto> Data { get; set; } = new();
     public int PageSize { get; set; }
     public int TotalCount { get; set; }
     public int PageNum { get; set; }

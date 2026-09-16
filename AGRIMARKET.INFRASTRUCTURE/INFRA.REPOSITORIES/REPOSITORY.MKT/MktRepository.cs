@@ -311,24 +311,63 @@ public class MktRepository : IMktRepository
             NewRecordedAt = newPrice.RecordedAt
         };
     }
-    public async Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation, int pageSize, int pageNum)
+    public async Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation,
+   int pageNum,
+        int pageSize)
     {
-        if (pageNum < 1) pageNum = 1;
-        if (pageSize < 1) pageSize = 1;
-        var entity = agriMarketContext.Prices.AsNoTracking();
+        if (pageNum < 1)
+            pageNum = 1;
+
+        if (pageSize < 1)
+            pageSize = 1;
+
+        var entity = agriMarketContext.Prices
+            .AsNoTracking();
+
         var totalCount = await entity.CountAsync(cancellation);
-        var records = await entity.OrderByDescending(x => x.Id)
+
+        var records = await entity
+            .OrderByDescending(x => x.Id)
             .Skip((pageNum - 1) * pageSize)
             .Take(pageSize)
             .Select(x => new PriceDto
             {
+                Id = x.Id,
+
                 MaxPrice = x.MaxPrice,
-                MinPrice = x.Price,
+                MinPrice = x.MinPrice,
                 Price = x.Price,
+
                 Curreny = x.Curreny,
                 PriceType = x.PriceType,
                 RecordedAt = x.RecordedAt,
-            }).ToListAsync(cancellation);
+
+                SourceId = x.SourceId,
+                CommodityId = x.CommodityId,
+                MarketId = x.MarketId,
+
+                // Commodity
+                Commodity = x.Commodity != null
+                    ? x.Commodity.Name
+                    : null,
+
+                Unit = x.Commodity != null
+                    ? x.Commodity.Unit.ToString()
+                    : null,
+
+                // Market
+                Market = x.Market != null
+                    ? x.Market.Name
+                    : null,
+
+                // District
+                District = x.Market != null &&
+                           x.Market.District != null
+                    ? x.Market.District.Name
+                    : null
+            })
+            .ToListAsync(cancellation);
+
         return new PaginatedResult<PriceDto>
         {
             pageNum = pageNum,
@@ -336,7 +375,6 @@ public class MktRepository : IMktRepository
             totalCount = totalCount,
             Data = records
         };
-
     }
     public async Task<PriceDto> GetPriceByIdAsync(long Id)
     {

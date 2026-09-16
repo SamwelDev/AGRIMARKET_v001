@@ -10,6 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddInfraDI(builder.Configuration);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorPolicy", policy =>
+    {
+        policy
+            .WithOrigins("https://localhost:7035")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddHttpClient<INuktaConfigurationClieant, NuktaConfigurationClient>(
     (serviceProvider, client) =>
     {
@@ -42,6 +53,8 @@ builder.Services.AddRateLimiter(opt =>
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+app.UseCors("BlazorPolicy");
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

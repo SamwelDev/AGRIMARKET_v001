@@ -113,3 +113,331 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+/*others css*/
+.agrimarket-dashboard {
+    min-height: 100vh;
+    padding: 20px;
+    background: #eef9e8;
+    font-family: Arial, sans-serif;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.brand-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    font-size: 42px;
+}
+
+.brand-area h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #126b48;
+}
+
+.brand-area span {
+    font-size: 13px;
+    color: #55705f;
+}
+
+.header-date {
+    text-align: right;
+    font-size: 12px;
+    color: #637267;
+}
+
+    .header-date strong {
+        display: block;
+        color: #126b48;
+        font-size: 14px;
+    }
+
+
+/* FILTERS */
+
+.dashboard-filters {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 14px;
+}
+
+.filter-group {
+    width: 180px;
+}
+
+    .filter-group label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #24634c;
+        margin-bottom: 3px;
+    }
+
+    .filter-group select {
+        width: 100%;
+        border: 1px solid #c7ddc6;
+        /*border-radius: 10px;*/
+        padding: 8px 10px;
+        background: #f7fff4;
+        color: #365344;
+        outline: none;
+    }
+
+
+/* SUMMARY */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.summary-card {
+    background: #f5ffef;
+    border: 1px solid #d7ebd0;
+    /*border-radius: 14px;*/
+    padding: 16px;
+    box-shadow: 0 3px 8px rgba(40, 80, 50, .08);
+}
+
+.summary-value {
+    color: #126b48;
+    font-size: 29px;
+    font-weight: 700;
+}
+
+.commodity-value {
+    font-size: 20px;
+    padding-top: 6px;
+}
+
+.summary-label {
+    margin-top: 4px;
+    color: #617465;
+    font-size: 12px;
+}
+
+
+/* GRID */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1.15fr 1fr;
+    gap: 10px;
+}
+
+.dashboard-left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dashboard-panel {
+    background: #f6fff1;
+    border: 1px solid #d4e9cd;
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 3px 8px rgba(40, 80, 50, .08);
+}
+
+.panel-title {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #365f4a;
+    margin-bottom: 12px;
+}
+
+
+/* BARS */
+
+.chart-placeholder {
+    padding: 8px;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+    .bar-row > span {
+        width: 75px;
+        font-size: 11px;
+        color: #52665a;
+    }
+
+.bar {
+    flex: 1;
+    height: 22px;
+    background: #e4f0df;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+    .bar div {
+        height: 100%;
+        background: #18724e;
+        border-radius: 4px;
+    }
+
+
+/* HORIZONTAL RANGE */
+
+.horizontal-bars > div {
+    margin-bottom: 12px;
+}
+
+.horizontal-bars span {
+    font-size: 11px;
+    color: #52665a;
+}
+
+.range-bar {
+    height: 18px;
+    background: #e5f0df;
+    margin-top: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+    .range-bar div {
+        height: 100%;
+        background: #15744e;
+    }
+
+
+/* MAP */
+
+.map-panel {
+    min-height: 380px;
+}
+
+.map-container {
+    height: 330px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #e2f1ec;
+    border-radius: 10px;
+}
+
+.tanzania-map {
+    font-size: 160px;
+}
+
+.map-info {
+    font-size: 11px;
+    color: #63776b;
+}
+
+
+/* DONUT */
+
+.donut-container {
+    display: flex;
+    justify-content: center;
+    margin: 25px 0;
+}
+
+.donut {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: conic-gradient( #14774e 0deg 110deg, #283d35 110deg 200deg, #a87962 200deg 270deg, #78aa94 270deg 360deg );
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.donut-center {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f6fff1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #176d4b;
+    font-weight: 700;
+}
+
+
+/* REGION LIST */
+
+.region-list > div {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 4px;
+    font-size: 12px;
+    border-bottom: 1px solid #dfebdc;
+}
+
+.region-list strong {
+    color: #176d4b;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-filters {
+        justify-content: stretch;
+    }
+
+    .filter-group {
+        flex: 1;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .agrimarket-dashboard {
+        padding: 10px;
+    }
+
+    .dashboard-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .header-date {
+        text-align: left;
+    }
+
+    .dashboard-filters {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}

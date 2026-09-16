@@ -6,7 +6,7 @@ namespace AGRIMARKET.RESOURCES.RESOURCES.HELPERS.HELPER.PAGINATION;
 
 public  class PaginatedResult<T>
 {
-    public List<T>? Data { get; set; }
+    public List<T> Data { get; set; } = new();
     public int pageSize { get; set; }
     public int totalCount { get; set; }
     public int pageNum { get; set; }

@@ -1,9 +1,12 @@
 ﻿using AGRIMARKET.APPLICATION.APPLICATION.SERVICES.SERVICE.IS_02;
+using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.MKT;
+using AGRIMARKET.RESOURCES.RESOURCES.HELPERS.HELPER.PAGINATION;
 using AGRIMARKET.RESOURCES.RESOURCES.RESPONSE;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.INFRA.SV_02;
 
@@ -16,8 +19,12 @@ public class ApiMarketService : IApiMarketService
         _http = http;
     }
 
-    public async Task<PriceResponseDto?> GetPricesAsync(int pageNum = 1,int pageSize = 100,CancellationToken cancellationToken = default)
+    public async Task<PaginatedResult<PriceDto>?> GetPricesAsync(int pageNum = 1,int pageSize = 100,CancellationToken cancellationToken = default)
     {
-        return await _http.GetFromJsonAsync<PriceResponseDto>($"api/Prices/get-all-Prices?pageNum={pageNum}&pageSize={pageSize}",cancellationToken);
+        var url = $"api/Prices/get-all-Prices?pageNum={pageNum}&pageSize={pageSize}";
+        var result = await _http.GetFromJsonAsync<PaginatedResult<PriceDto>>(url,cancellationToken);
+       return result;
     }
+
+
 }

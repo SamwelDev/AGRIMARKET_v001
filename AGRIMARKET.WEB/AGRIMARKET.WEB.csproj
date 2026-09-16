@@ -19,4 +19,8 @@
     <ProjectReference Include="..\AGRIMARKET.RESOURCES\AGRIMARKET.RESOURCES.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\" />
+  </ItemGroup>
+
 </Project>

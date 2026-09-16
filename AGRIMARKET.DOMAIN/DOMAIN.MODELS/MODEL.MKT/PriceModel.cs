@@ -21,5 +21,7 @@ public class PriceModel
     public long? MarketId { get; set; }
     public PriceSource? PriceSource { get; set; }
     public CommodityModel? Commodity { get; set; }
-    public MarketModel? Model { get; set; }
+    public MarketModel? Market { get; set; }
+
+
 }
