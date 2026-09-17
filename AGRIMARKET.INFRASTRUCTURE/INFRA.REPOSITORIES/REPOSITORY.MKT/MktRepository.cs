@@ -334,6 +334,7 @@ public class MktRepository : IMktRepository
 
                 MaxPrice = x.MaxPrice,
                 MinPrice = x.MinPrice,
+                Region = x.Market != null && x.Market.District != null &&x.Market.District.Region != null ? x.Market.District.Region.Name: null,
                 Price = x.Price,
                 Curreny = x.Curreny,
                 PriceType = x.PriceType,

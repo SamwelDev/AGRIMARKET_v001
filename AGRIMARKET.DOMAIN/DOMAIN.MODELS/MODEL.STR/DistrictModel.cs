@@ -9,8 +9,7 @@ public class DistrictModel
 {
     public long Id {  get; set; }
     public string? Name { get; set; }
-    // Fr
-    public long RegionModelId { get; set; }
+    public long? RegionId { get; set; }
 
     // Nav property
     public RegionModel? Region { get; set; }

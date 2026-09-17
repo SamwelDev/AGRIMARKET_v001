@@ -137,7 +137,7 @@ public class ExternalDataImporterService : IExternalDataImpoter
         {
             district = new DistrictModel
             {
-                Name = location
+                Name = location,
             };
 
             _context.Districts.Add(district);

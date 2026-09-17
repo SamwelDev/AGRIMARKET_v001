@@ -4,6 +4,7 @@ using AGRIMARKET.INFRASTRUCTURE.INFRA.CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AGRIMARKET.INFRASTRUCTURE.Migrations
 {
     [DbContext(typeof(AgriMarketContext))]
-    partial class AgriMarketContextModelSnapshot : ModelSnapshot
+    [Migration("20260916210211_initial1")]
+    partial class initial1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,7 +141,7 @@ namespace AGRIMARKET.INFRASTRUCTURE.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("RegionId")
+                    b.Property<long>("RegionId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -198,7 +201,9 @@ namespace AGRIMARKET.INFRASTRUCTURE.Migrations
                 {
                     b.HasOne("AGRIMARKET.DOMAIN.DOMAIN.MODELS.MODEL.STR.RegionModel", "Region")
                         .WithMany("Districts")
-                        .HasForeignKey("RegionId");
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Region");
                 });
