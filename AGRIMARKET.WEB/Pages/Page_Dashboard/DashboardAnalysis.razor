@@ -30,13 +30,15 @@
                     <p>Daily Agriculture Price Trends</p>
                 </div>
 
-                <div>
+                <div class="table-status">
+                    <span class="live-dot"></span>
+
                     <small>Last Updated</small>
                     <strong class="badge bg-success">
                         @LastUpdated.ToString("dd MMM yyyy")
                     </strong>
-                </div>
-
+                </div>  
+           
             </div>
             <div class="dashboard-filters">
                 <div class="filter-group">
@@ -82,7 +84,7 @@
                 <div class="summary-card">
 
                     <div class="summary-value">
-                        TZS @AverageMaxPrice.ToString("N0")
+                        TZS @AverageMaxPrice.ToString("N0")/=
                     </div>
 
                     <div class="summary-label">
@@ -95,7 +97,7 @@
                 <div class="summary-card">
 
                     <div class="summary-value">
-                        TZS @AverageMinPrice.ToString("N0")
+                        TZS @AverageMinPrice.ToString("N0")/=
                     </div>
 
                     <div class="summary-label">
@@ -131,10 +133,155 @@
                 </div>
 
             </div>
+            <div class="dashboard-panel trend-panel">
+                <div class="panel-title">
+                    <div>
+                        <h6>Market Price Trend At @DateTime.Now.ToString("HH:mm")</h6>
+                        <small class="small-word">
+                            @if (!string.IsNullOrWhiteSpace(selectedCommodity))
+                            {
+                                @selectedCommodity
+                            }
+                            else
+                            {
+                                @:Latest commodity price movement
+                            }
+                        </small>
+                    </div>
+
+                    <div class="trend-status">
+                        <span class="live-dot"></span>
+                        LIVE TREND
+                    </div>
+
+                </div>
+
+
+                @if (FilteredPrices.Any())
+                {
+                    var trendData = FilteredPrices.OrderBy(x => x.RecordedAt).TakeLast(12).ToList();
+                    var maxChartPrice = trendData
+                        .SelectMany(x => new[]
+                        {
+                             x.MinPrice,
+                             x.Price,
+                             x.MaxPrice
+                        })
+                        .DefaultIfEmpty(1)
+                        .Max();
+
+                    <div class="trend-chart">
+                        <div class="trend-y-axis">
+
+                            <span>
+                                TZS @maxChartPrice.ToString("N0")
+                            </span>
+
+                            <span>
+                                TZS @((maxChartPrice * .75m).ToString("N0"))
+                            </span>
+
+                            <span>
+                                TZS @((maxChartPrice * .50m).ToString("N0"))
+                            </span>
+
+                            <span>
+                                TZS @((maxChartPrice * .25m).ToString("N0"))
+                            </span>
+
+                            <span>
+                                TZS 0
+                            </span>
+
+                        </div>
+                        <div class="trend-chart-body">
+
+                            <div class="chart-grid-lines">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+
+
+                            <div class="trend-bars">
+
+                                @foreach (var item in trendData)
+                                {
+                                    var height = maxChartPrice > 0
+                                        ? (double)(item.Price / maxChartPrice) * 100
+                                        : 0;
+
+                                    <div class="trend-column">
+
+                                        <div class="trend-tooltip">
+                                            <strong>
+                                                TZS @item.Price.ToString("N0")
+                                            </strong>
+
+                                            <small>
+                                                @item.RecordedAt.ToString("dd MMM")
+                                            </small>
+                                        </div>
+
+                                        <div class="trend-bar-container">
+
+                                            <div class="trend-bar"
+                                                 style="height:@($"{height}%")">
+                                            </div>
+
+                                            <div class="trend-point">
+                                                ●
+                                            </div>
+
+                                        </div>
+
+                                        <small class="trend-date">
+                                            @item.RecordedAt.ToString("dd MMM")
+                                        </small>
+
+                                    </div>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="trend-legend">
+
+                        <span>
+                            <i class="current"></i>
+                            Current Price
+                        </span>
+
+                        <span>
+                            <i class="minimum"></i>
+                            Min Price
+                        </span>
+
+                        <span>
+                            <i class="maximum"></i>
+                            Max Price
+                        </span>
+
+                    </div>
+
+                }
+                else
+                {
+                    <div class="trend-empty">
+                        No trend data available for the selected filters.
+                    </div>
+                }
+
+            </div>
+
             <div class="dashboard-panel">
 
                 <div class="panel-title">
-                    Latest Agriculture Prices
+                    Latest Agriculture Prices <small class="small-word">(In 100 Kg)</small>
                 </div>
 
                 <div class="table-responsive">
@@ -143,14 +290,14 @@
 
                         <thead>
                             <tr>
-                                <th>Commodity</th>
+                                <th>Commodity <small class="small-word">(Bidhaa)</small></th>
                                 <th>Market</th>
                                 <th>District</th>
                                 <th>Region</th>
-                                <th>Unit</th>
-                                <th>Min</th>
-                                <th>Price</th>
-                                <th>Max</th>
+                                <th>Unit<small class="small-word">(In 100 Kg)</small></th>
+                                <th>Min <small class="small-word">(In Tsh)</small></th>
+                                <th>Price <small class="small-word">(In Tsh)</small></th>
+                                <th>Max <small class="small-word">(In Tsh)</small></th>
                                 <th>Type</th>
                                 <th>Date</th>
                             </tr>
@@ -219,9 +366,6 @@
     }
 </div>
 
-
-
-
 @code {
 
     private bool loading = true;
@@ -230,55 +374,46 @@
     private string selectedRegion = "";
     private string selectedMarket = "";
     private string selectedCommodity = "";
-    private IEnumerable<PriceDto> FilteredPrices =>
-        prices.Where(x =>
-          
-            (string.IsNullOrWhiteSpace(selectedMarket) ||
-             x.Market == selectedMarket)
-            &&
-            (string.IsNullOrWhiteSpace(selectedCommodity) ||
-             x.Commodity == selectedCommodity));
+    private IEnumerable<PriceDto> FilteredPrices => prices.Where(x => (string.IsNullOrWhiteSpace(selectedMarket) || x.Market == selectedMarket)
+            && (string.IsNullOrWhiteSpace(selectedCommodity) || x.Commodity == selectedCommodity));
+    private decimal AverageMaxPrice => FilteredPrices.Any()? FilteredPrices.Average(x => x.MaxPrice): 0;
+    private decimal AverageMinPrice => FilteredPrices.Any() ? FilteredPrices.Average(x => x.MinPrice) : 0;
+    private string TopCommodity => FilteredPrices.Where(x => !string.IsNullOrWhiteSpace(x.Commodity)) .GroupBy(x => x.Commodity).OrderByDescending(x => x.Count()).Select(x => x.Key).FirstOrDefault()?? "-";
+    private int CommodityCount =>FilteredPrices.Select(x => x.Commodity).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().Count();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
 
+            
+            var response = await service.GetPricesAsync(pageNum: 1, pageSize: 100);
+            var regionResponse = await service.GetRegionsAsync(pageNum: 1, pageSize: 50);
+            prices = response?.Data ?? new List<PriceDto>();
+            regions = regionResponse?.Data ?? new List<RegionDto>();
+            logger.LogInformation("Prices loaded: {Count}", prices.Count);
+            logger.LogInformation("Regions loaded: {Count}", regions.Count);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error loading dashboard data");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
 
-    private decimal AverageMaxPrice =>
-        FilteredPrices.Any()
-            ? FilteredPrices.Average(x => x.MaxPrice)
-            : 0;
-
-
-    private decimal AverageMinPrice =>
-        FilteredPrices.Any()
-            ? FilteredPrices.Average(x => x.MinPrice)
-            : 0;
-
-
-    private string TopCommodity =>
-        FilteredPrices
-            .Where(x => !string.IsNullOrWhiteSpace(x.Commodity))
-            .GroupBy(x => x.Commodity)
-            .OrderByDescending(x => x.Count())
-            .Select(x => x.Key)
-            .FirstOrDefault()
-            ?? "-";
-
-
-    private int CommodityCount =>
-        FilteredPrices
-            .Select(x => x.Commodity)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct()
-            .Count();
-
+    
+    
+    
+    
+    
     private void RegionChanged()
     {
         selectedMarket = "";
         selectedCommodity = "";
     }
-
-
-
-    private IEnumerable<string> Markets =>
-     regions
+    private IEnumerable<string> Markets => regions
          .Where(r =>
              string.IsNullOrWhiteSpace(selectedRegion) ||
              string.Equals(
@@ -301,54 +436,38 @@
             .OrderBy(x => x);
 
 
-    private DateTimeOffset LastUpdated =>
-        prices.Count == 0
-            ? DateTimeOffset.MinValue
-            : prices.Max(x => x.RecordedAt);
-    private IEnumerable<string> Regions =>
-        regions
-            .Select(x => x.Name)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct()
-            .OrderBy(x => x);
+    private DateTimeOffset LastUpdated =>prices.Count == 0 ? DateTimeOffset.MinValue: prices.Max(x => x.RecordedAt);
+    private IEnumerable<string> Regions => regions.Select(x => x.Name).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x);
+
+    private IEnumerable<PriceDto> MarketTicker =>
+    FilteredPrices
+        .GroupBy(x => x.Commodity)
+        .Select(g => g.OrderByDescending(x => x.RecordedAt).First())
+        .OrderByDescending(x => x.RecordedAt)
+        .Take(6);
 
 
-    protected override async Task OnInitializedAsync()
+    private int RisingCount =>
+        FilteredPrices.Count(x => GetChangePercentage(x) > 0);
+
+
+    private int FallingCount =>
+        FilteredPrices.Count(x => GetChangePercentage(x) < 0);
+    private decimal GetChangePercentage(PriceDto item)
     {
-        try
-        {
-            
+        var previous = prices
+            .Where(x =>
+                x.Commodity == item.Commodity &&
+                x.RecordedAt < item.RecordedAt)
+            .OrderByDescending(x => x.RecordedAt)
+            .FirstOrDefault();
 
-            var response = await service.GetPricesAsync(
-                pageNum: 1,
-                pageSize: 100);
+        if (previous == null || previous.Price == 0)
+            return 0;
 
-            var regionResponse = await service.GetRegionsAsync(
-                pageNum: 1,
-                pageSize: 50);
-
-            prices = response?.Data ?? new List<PriceDto>();
-
-            regions = regionResponse?.Data ?? new List<RegionDto>();
-
-            logger.LogInformation(
-                "Prices loaded: {Count}",
-                prices.Count);
-
-            logger.LogInformation(
-                "Regions loaded: {Count}",
-                regions.Count);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(
-                ex,
-                "Error loading dashboard data");
-        }
-        finally
-        {
-            loading = false;
-        }
+        return ((item.Price - previous.Price) / previous.Price) * 100;
     }
+
+
 
 }

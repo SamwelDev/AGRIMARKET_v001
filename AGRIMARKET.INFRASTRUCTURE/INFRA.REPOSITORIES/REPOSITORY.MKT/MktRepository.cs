@@ -110,6 +110,7 @@ public class MktRepository : IMktRepository
         await agriMarketContext.SaveChangesAsync(cancellation);
     }
     #endregion
+
     #region[CMDTIES]
     public async Task<PaginatedResult<CommodityDto>> GetAllCommoditiesAsync(CancellationToken cancellation, int pageSize, int pageNum)
     {
@@ -185,246 +186,205 @@ public class MktRepository : IMktRepository
 
     #region[PRICES]
  
-    public  async Task<PriceDto> GetLatestAsync(CancellationToken cancellation)
-    {
-        var data = await agriMarketContext.Prices.AsNoTracking().OrderByDescending(x => x.RecordedAt)
-            .FirstOrDefaultAsync(cancellation);
-        if (data == null)
-            return null;
-        return new PriceDto
+        public  async Task<PriceDto> GetLatestAsync(CancellationToken cancellation)
         {
-            Curreny = data.Curreny,
-            PriceType = data.PriceType,
-            MaxPrice = data.MaxPrice,
-            MinPrice = data.MinPrice,
-            Price = data.Price,
-            RecordedAt = data.RecordedAt
-        };
-    }
-    public async Task<PaginatedResult<PriceDto>> GetPriceHistoryAsync(DateTime? from,DateTime? to,CancellationToken cancellation,int pageSize,int pageNum)
-    {
-        if (pageNum < 1)
-            pageNum = 1;
-
-        if (pageSize < 1)
-            pageSize = 20;
-
-        var query = agriMarketContext.Prices
-            .AsNoTracking()
-            .AsQueryable();
-
-        if (from.HasValue)
-        {
-            query = query.Where(x => x.RecordedAt >= from.Value);
-        }
-
-        if (to.HasValue)
-        {
-            query = query.Where(x => x.RecordedAt <= to.Value);
-        }
-
-        var totalCount = await query.CountAsync(cancellation);
-
-        var records = await query
-            .OrderByDescending(x => x.RecordedAt)
-            .Skip((pageNum - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new PriceDto
+            var data = await agriMarketContext.Prices.AsNoTracking().OrderByDescending(x => x.RecordedAt)
+                .FirstOrDefaultAsync(cancellation);
+            if (data == null)
+                return null;
+            return new PriceDto
             {
-                Id = x.Id,
-                MaxPrice = x.MaxPrice,
-                MinPrice = x.MinPrice,
-                Curreny = x.Curreny,
-                PriceType = x.PriceType,
-                RecordedAt = x.RecordedAt
-            })
-            .ToListAsync(cancellation);
-
-        return new PaginatedResult<PriceDto>
+                Curreny = data.Curreny,
+                PriceType = data.PriceType,
+                MaxPrice = data.MaxPrice,
+                MinPrice = data.MinPrice,
+                Price = data.Price,
+                RecordedAt = data.RecordedAt
+            };
+        }
+        public async Task<PaginatedResult<PriceDto>> GetPriceHistoryAsync(DateTime? from,DateTime? to,CancellationToken cancellation,int pageSize,int pageNum)
         {
-            pageNum = pageNum,
-            pageSize = pageSize,
-            totalCount = totalCount,
-            Data = records
-        };
-    }
+            if (pageNum < 1)
+                pageNum = 1;
 
-    public async Task<CompareDto?> ComparePricesAsync(long commodityId,long marketId,DateTimeOffset oldDate,DateTimeOffset newDate,PriceType priceType,CancellationToken cancellation)
-    {
-        var oldPrice = await agriMarketContext.Prices
-            .AsNoTracking()
-            .Where(x =>
-                x.CommodityId == commodityId &&
-                x.MarketId == marketId &&
-                x.PriceType == priceType &&
-                x.RecordedAt <= oldDate)
-            .OrderByDescending(x => x.RecordedAt)
-            .FirstOrDefaultAsync(cancellation);
+            if (pageSize < 1)
+                pageSize = 20;
 
-        var newPrice = await agriMarketContext.Prices
-            .AsNoTracking()
-            .Where(x =>
-                x.CommodityId == commodityId &&
-                x.MarketId == marketId &&
-                x.PriceType == priceType &&
-                x.RecordedAt <= newDate)
-            .OrderByDescending(x => x.RecordedAt)
-            .FirstOrDefaultAsync(cancellation);
+            var query = agriMarketContext.Prices
+                .AsNoTracking()
+                .AsQueryable();
 
-        if (oldPrice == null || newPrice == null)
-            return null;
-
-        return new CompareDto
-        {
-            PriceType = newPrice.PriceType.ToString(),
-
-            // Price
-            OldPrice = oldPrice.Price,
-            NewPrice = newPrice.Price,
-            PriceDifference = newPrice.Price - oldPrice.Price,
-            PricePercentageChange =
-                CalculatePercentageChange(
-                    oldPrice.Price,
-                    newPrice.Price),
-
-            // Minimum
-            OldMinPrice = oldPrice.MinPrice,
-            NewMinPrice = newPrice.MinPrice,
-            MinPriceDifference =
-                newPrice.MinPrice - oldPrice.MinPrice,
-            MinPricePercentageChange =
-                CalculatePercentageChange(
-                    oldPrice.MinPrice,
-                    newPrice.MinPrice),
-
-            // Maximum
-            OldMaxPrice = oldPrice.MaxPrice,
-            NewMaxPrice = newPrice.MaxPrice,
-            MaxPriceDifference =
-                newPrice.MaxPrice - oldPrice.MaxPrice,
-            MaxPricePercentageChange =
-                CalculatePercentageChange(
-                    oldPrice.MaxPrice,
-                    newPrice.MaxPrice),
-
-            OldRecordedAt = oldPrice.RecordedAt,
-            NewRecordedAt = newPrice.RecordedAt
-        };
-    }
-    public async Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation,int pageNum,int pageSize)
-    {
-        if (pageNum < 1)
-            pageNum = 1;
-
-        if (pageSize < 1)
-            pageSize = 1;
-
-        var entity = agriMarketContext.Prices
-            .AsNoTracking();
-
-        var totalCount = await entity.CountAsync(cancellation);
-
-        var records = await entity
-            .OrderByDescending(x => x.Id)
-            .Skip((pageNum - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new PriceDto
+            if (from.HasValue)
             {
-                Id = x.Id,
+                query = query.Where(x => x.RecordedAt >= from.Value);
+            }
 
-                MaxPrice = x.MaxPrice,
-                MinPrice = x.MinPrice,
-                Region = x.Market != null && x.Market.District != null &&x.Market.District.Region != null ? x.Market.District.Region.Name: null,
-                Price = x.Price,
-                Curreny = x.Curreny,
-                PriceType = x.PriceType,
-                RecordedAt = x.RecordedAt,
-                SourceId = x.SourceId,
-                CommodityId = x.CommodityId,
-                MarketId = x.MarketId,
+            if (to.HasValue)
+            {
+                query = query.Where(x => x.RecordedAt <= to.Value);
+            }
 
-                // Commodity
-                Commodity = x.Commodity != null
-                    ? x.Commodity.Name
-                    : null,
+            var totalCount = await query.CountAsync(cancellation);
 
-                Unit = x.Commodity != null
-                    ? x.Commodity.Unit.ToString()
-                    : null,
+            var records = await query
+                .OrderByDescending(x => x.RecordedAt)
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new PriceDto
+                {
+                    Id = x.Id,
+                    MaxPrice = x.MaxPrice,
+                    MinPrice = x.MinPrice,
+                    Curreny = x.Curreny,
+                    PriceType = x.PriceType,
+                    RecordedAt = x.RecordedAt
+                })
+                .ToListAsync(cancellation);
 
-                // Market
-                Market = x.Market != null
-                    ? x.Market.Name
-                    : null,
-
-                // District
-                District = x.Market != null &&
-                           x.Market.District != null
-                    ? x.Market.District.Name
-                    : null
-            })
-            .ToListAsync(cancellation);
-
-        return new PaginatedResult<PriceDto>
-        {
-            pageNum = pageNum,
-            pageSize = pageSize,
-            totalCount = totalCount,
-            Data = records
-        };
-    }
-    public async Task<PriceDto> GetPriceByIdAsync(long Id)
-    {
-        if (Id < 1)
-        {
-            throw new ArgumentOutOfRangeException(nameof(Id));
+            return new PaginatedResult<PriceDto>
+            {
+                pageNum = pageNum,
+                pageSize = pageSize,
+                totalCount = totalCount,
+                Data = records
+            };
         }
-        var data = await agriMarketContext.Prices.FirstOrDefaultAsync(x => x.Id == Id);
-        return new PriceDto
+
+        public async Task<CompareDto?> ComparePricesAsync(long commodityId,long marketId,DateTimeOffset oldDate,DateTimeOffset newDate,PriceType priceType,CancellationToken cancellation)
         {
-            MaxPrice = data.MaxPrice,
-            Price = data.Price,
-            MinPrice = data.MinPrice,
-            Curreny = data.Curreny,
-            PriceType = data.PriceType,
-        };
-    }
-    public async Task<long> AddNewPriceAsync(PriceDto market, CancellationToken cancellation)
-    {
-        if (market.MaxPrice>0)
-        {
-            throw new ArgumentNullException(nameof(market));
+            var oldPrice = await agriMarketContext.Prices
+                .AsNoTracking()
+                .Where(x =>
+                    x.CommodityId == commodityId &&
+                    x.MarketId == marketId &&
+                    x.PriceType == priceType &&
+                    x.RecordedAt <= oldDate)
+                .OrderByDescending(x => x.RecordedAt)
+                .FirstOrDefaultAsync(cancellation);
+
+            var newPrice = await agriMarketContext.Prices
+                .AsNoTracking()
+                .Where(x =>
+                    x.CommodityId == commodityId &&
+                    x.MarketId == marketId &&
+                    x.PriceType == priceType &&
+                    x.RecordedAt <= newDate)
+                .OrderByDescending(x => x.RecordedAt)
+                .FirstOrDefaultAsync(cancellation);
+
+            if (oldPrice == null || newPrice == null)
+                return null;
+
+            return new CompareDto
+            {
+                PriceType = newPrice.PriceType.ToString(),
+                OldPrice = oldPrice.Price,
+                NewPrice = newPrice.Price,
+                PriceDifference = newPrice.Price - oldPrice.Price,
+                PricePercentageChange =CalculatePercentageChange(oldPrice.Price,newPrice.Price),
+                OldMinPrice = oldPrice.MinPrice,
+                NewMinPrice = newPrice.MinPrice,
+                MinPriceDifference =newPrice.MinPrice - oldPrice.MinPrice,
+                MinPricePercentageChange =CalculatePercentageChange(oldPrice.MinPrice,newPrice.MinPrice),
+                OldMaxPrice = oldPrice.MaxPrice,
+                NewMaxPrice = newPrice.MaxPrice,
+                MaxPriceDifference =newPrice.MaxPrice - oldPrice.MaxPrice,
+                MaxPricePercentageChange = CalculatePercentageChange(oldPrice.MaxPrice,newPrice.MaxPrice),
+                OldRecordedAt = oldPrice.RecordedAt,
+                NewRecordedAt = newPrice.RecordedAt
+            };
         }
-        if (market.MaxPrice > 0)
+        public async Task<PaginatedResult<PriceDto>> GetAllPricesAsync(CancellationToken cancellation,int pageNum,int pageSize)
         {
-            throw new ArgumentNullException(nameof(market));
+            if (pageNum < 1)pageNum = 1;
+            if (pageSize < 1)pageSize = 1;
+            var entity = agriMarketContext.Prices.AsNoTracking();
+            var totalCount = await entity.CountAsync(cancellation);
+            var records = await entity
+                .OrderByDescending(x => x.Id)
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new PriceDto
+                {
+                    Id = x.Id,
+
+                    MaxPrice = x.MaxPrice,
+                    MinPrice = x.MinPrice,
+                    Region = x.Market != null && x.Market.District != null &&x.Market.District.Region != null ? x.Market.District.Region.Name: null,
+                    Price = x.Price,
+                    Curreny = x.Curreny,
+                    PriceType = x.PriceType,
+                    RecordedAt = x.RecordedAt,
+                    SourceId = x.SourceId,
+                    CommodityId = x.CommodityId,
+                    MarketId = x.MarketId,
+                    Commodity = x.Commodity != null? x.Commodity.Name: null,
+                    Unit = x.Commodity != null? x.Commodity.Unit.ToString(): null,
+                    Market = x.Market != null? x.Market.Name: null,
+                    District = x.Market != null &&x.Market.District != null? x.Market.District.Name: null
+                })
+                .ToListAsync(cancellation);
+
+            return new PaginatedResult<PriceDto>
+            {
+                pageNum = pageNum,
+                pageSize = pageSize,
+                totalCount = totalCount,
+                Data = records
+            };
         }
-        var entityData = new PriceModel
+        public async Task<PriceDto> GetPriceByIdAsync(long Id)
         {
-            Curreny = market.Curreny,
-            PriceType = market.PriceType,
-            RecordedAt = market.RecordedAt,
-            MaxPrice = market.MaxPrice,
-            MinPrice = market.MinPrice,
-            Price = market.Price,
+            if (Id < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(Id));
+            }
+            var data = await agriMarketContext.Prices.FirstOrDefaultAsync(x => x.Id == Id);
+            return new PriceDto
+            {
+                MaxPrice = data.MaxPrice,
+                Price = data.Price,
+                MinPrice = data.MinPrice,
+                Curreny = data.Curreny,
+                PriceType = data.PriceType,
+            };
+        }
+        public async Task<long> AddNewPriceAsync(PriceDto market, CancellationToken cancellation)
+        {
+            if (market.MaxPrice>0)
+            {
+                throw new ArgumentNullException(nameof(market));
+            }
+            if (market.MaxPrice > 0)
+            {
+                throw new ArgumentNullException(nameof(market));
+            }
+            var entityData = new PriceModel
+            {
+                Curreny = market.Curreny,
+                PriceType = market.PriceType,
+                RecordedAt = market.RecordedAt,
+                MaxPrice = market.MaxPrice,
+                MinPrice = market.MinPrice,
+                Price = market.Price,
             
-        };
-        await agriMarketContext.Prices.AddRangeAsync(entityData);
-        await agriMarketContext.SaveChangesAsync(cancellation);
-        return market.Id;
-    }
-
-    public async Task DeletePricesAsync(long Id, CancellationToken cancellation)
-    {
-        if (Id < 1)
-        {
-            throw new ArgumentOutOfRangeException(nameof(Id));
+            };
+            await agriMarketContext.Prices.AddRangeAsync(entityData);
+            await agriMarketContext.SaveChangesAsync(cancellation);
+            return market.Id;
         }
-        var deleteData = await agriMarketContext.Prices.FirstOrDefaultAsync(x => x.Id == Id);
-        if (deleteData != null)
-            agriMarketContext.Prices.RemoveRange(deleteData);
-        await agriMarketContext.SaveChangesAsync(cancellation);
-    }
+
+        public async Task DeletePricesAsync(long Id, CancellationToken cancellation)
+        {
+            if (Id < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(Id));
+            }
+            var deleteData = await agriMarketContext.Prices.FirstOrDefaultAsync(x => x.Id == Id);
+            if (deleteData != null)
+                agriMarketContext.Prices.RemoveRange(deleteData);
+            await agriMarketContext.SaveChangesAsync(cancellation);
+        }
     #endregion
 
     #region[Others]
