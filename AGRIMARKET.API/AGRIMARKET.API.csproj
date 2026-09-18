@@ -31,10 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="scripts.ssl\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\..\..\..\Downloads\fixer_script.sql" Link="scripts.ssl\fixer_script.sql" />
     <None Include="..\..\..\..\..\Downloads\Regions.sql" Link="scripts.ssl\Regions.sql" />
   </ItemGroup>

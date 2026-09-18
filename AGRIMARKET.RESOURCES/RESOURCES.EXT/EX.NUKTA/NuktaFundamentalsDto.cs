@@ -104,7 +104,7 @@ public class NuktaCommodityResponseDto
 
     [JsonPropertyName("data")]
     public NuktaCommodityDataDto? Data { get; set; }
-
+    
     [JsonPropertyName("meta")]
     public NuktaMetaDto? Meta { get; set; }
 }
