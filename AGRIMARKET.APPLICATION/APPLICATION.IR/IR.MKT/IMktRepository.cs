@@ -29,6 +29,7 @@ public  interface IMktRepository
     Task<long> AddNewPriceAsync(PriceDto market, CancellationToken cancellation);
     Task DeletePricesAsync(long Id, CancellationToken cancellation);
 
-
+    //Profit mkt
+    Task<List<ProfitDto>> FindProfitableMarketsAsync(long commodityId, long originMarketId, decimal quantity, CancellationToken cancellationToken = default);
 
     }

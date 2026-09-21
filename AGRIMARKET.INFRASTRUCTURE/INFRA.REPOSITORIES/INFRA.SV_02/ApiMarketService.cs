@@ -32,5 +32,38 @@ public class ApiMarketService : IApiMarketService
         var data = await _http.GetFromJsonAsync<PaginatedResult<RegionDto>>(_url, cancellationToken);
         return data;
     }
+    public async Task<List<ProfitDto>> FindProfitableMarketsAsync(long commodityId,long originMarketId,decimal quantity,CancellationToken cancellationToken = default)
+    {
+        var request = new FindProfitableMarketsRequest
+        {
+            CommodityId = commodityId,
+            OriginMarketId = originMarketId,
+            Quantity = quantity
+        };
 
+        using var response = await _http.PostAsJsonAsync(
+            "api/Market/find-profitable-market",
+            request,
+            cancellationToken);
+
+        var responseBody = await response.Content.ReadAsStringAsync(
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Market profitability request failed. " +
+                $"Status: {(int)response.StatusCode} {response.StatusCode}. " +
+                $"Response: {responseBody}");
+        }
+
+        var result = JsonSerializer.Deserialize<List<ProfitDto>>(
+            responseBody,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+        return result ?? [];
+    }
 }

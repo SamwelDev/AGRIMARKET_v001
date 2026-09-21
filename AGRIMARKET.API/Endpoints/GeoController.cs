@@ -79,6 +79,6 @@ namespace AGRIMARKET.API.Endpoints
         //    var districtData = await geoRepoistory.DeleteDsistrictAsync(cancellation,Id);
         //    return Ok(districtData);
         //}
-
+     
     }
 }

@@ -39,7 +39,6 @@
 
                 </div>
                 <div class="dashboard-filters">
-
                     <div class="filter-group">
                         <label>Region</label>
 
@@ -147,6 +146,165 @@
 
             </div>
             <main>
+                <section class="dashboard-panel profitability-panel">
+                    <div class="panel-title">
+                        <div class="panel-heading">
+                            <h6>
+                                Find the Best Market
+                            </h6>
+
+                            <small class="small-word">
+                                Compare market prices and road distance for your commodity
+                            </small>
+                        </div>
+
+                        <div class="trend-status">
+                            <span class="live-dot"></span>
+                            MARKET ANALYSIS
+                        </div>
+                    </div>
+
+                    <div class="profitability-filters">
+                        <div class="filter-group">
+                            <label>Commodity</label>
+                            <select @bind="profitCommodityId">
+                                <option value="0">Select commodity</option>
+                                @foreach (var commodity in prices.Where(x => x.CommodityId > 0).GroupBy(x => new { x.CommodityId, x.Commodity }).OrderBy(x => x.Key.Commodity))
+                                {
+                                    <option value="@commodity.Key.CommodityId">
+                                        @commodity.Key.Commodity
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Quantity (KG)</label>
+
+                            <input type="number"
+                                   min="1"
+                                   @bind="profitQuantity" />
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Origin Market</label>
+
+                            <select @bind="profitOriginMarketId">
+
+                                <option value="0">
+                                    Select origin market
+                                </option>
+
+                                @foreach (var market in OriginMarkets)
+                                {
+                                    <option value="@market.Id">
+                                        @market.Name
+                                    </option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary"@onclick="FindProfitableMarketsAsync"disabled="@profitLoading">
+
+                            @if (profitLoading)
+                            {
+                                <span>Calculating...</span>
+                            }
+                            else
+                            {
+                                <span>Find Markets</span>
+                            }
+
+                        </button>
+
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(profitError))
+                    {
+                        <div class="alert alert-warning mt-3">
+                            @profitError
+                        </div>
+                    }
+
+                    @if (profitResults.Any())
+                    {
+                        <div class="profitability-results mt-4">
+
+                            <div class="profitability-result-header">
+                                <div>
+                                    <strong>Market Opportunities</strong>
+
+                                    <small>
+                                        @profitQuantity.ToString("N0") KG
+                                    </small>
+                                </div>
+
+                                <span>
+                                    @profitResults.Count markets
+                                </span>
+                            </div>
+
+                            <div class="table-responsive">
+
+                                <table class="table">
+
+                                    <thead>
+                                        <tr>
+                                            <th>Market</th>
+                                            <th>Price / KG</th>
+                                            <th>Distance</th>
+                                            <th>Travel Time</th>
+                                            <th>Gross Revenue</th>
+                                            <th>Estimated Net Revenue</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        @foreach (var market in profitResults)
+                                        {
+                                            <tr>
+
+                                                <td>
+                                                    <strong>
+                                                        @market.MarketName
+                                                    </strong>
+                                                </td>
+
+                                                <td>
+                                                    TZS @market.PricePerUnit.ToString("N0")
+                                                </td>
+
+                                                <td>
+                                                    @market.DistanceKm.ToString("N1") KM
+                                                </td>
+
+                                                <td>
+                                                    @market.DurationMinutes.ToString("N0") min
+                                                </td>
+
+                                                <td>
+                                                    TZS @market.GrossRevenue.ToString("N0")
+                                                </td>
+
+                                                <td class="price">
+                                                    TZS @market.EstimatedNetRevenue.ToString("N0")
+                                                </td>
+
+                                            </tr>
+                                        }
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </section>
                 <div class="dashboard-chart-row">
                     <section class="dashboard-panel trend-panel">
                         <div class="panel-title">
@@ -565,6 +723,12 @@
     private List<RegionDto> regions = [];
     private string selectedRegion = "";
     private string selectedMarket = "";
+    private long profitCommodityId;
+    private long profitOriginMarketId;
+    private decimal profitQuantity = 100;
+    private bool profitLoading;
+    private string? profitError;
+    private List<ProfitDto> profitResults = [];
     private string selectedCommodity = "";
     private IEnumerable<PriceDto> FilteredPrices => prices.Where(x => (string.IsNullOrWhiteSpace(selectedMarket) || x.Market == selectedMarket) && (string.IsNullOrWhiteSpace(selectedCommodity) || x.Commodity == selectedCommodity));
     private decimal AverageMaxPrice => FilteredPrices.Any()? FilteredPrices.Average(x => x.MaxPrice): 0;
@@ -576,7 +740,7 @@
         try
         {
 
-            
+
             var response = await service.GetPricesAsync(pageNum: 1, pageSize: 100);
             var regionResponse = await service.GetRegionsAsync(pageNum: 1, pageSize: 50);
             prices = response?.Data ?? new List<PriceDto>();
@@ -593,6 +757,18 @@
             loading = false;
         }
     }    
+    private IEnumerable<MarketOptionDto> OriginMarkets =>regions
+        .SelectMany(r => r.Districts)
+        .SelectMany(d => d.Markets)
+        .Where(m => m.Id > 0 && !string.IsNullOrWhiteSpace(m.Name))
+        .Select(m => new MarketOptionDto
+        {
+            Id = m.Id,
+            Name = m.Name
+        })
+        .GroupBy(m => m.Id)
+        .Select(g => g.First())
+        .OrderBy(m => m.Name);
     private void RegionChanged()
     {
         selectedMarket = "";
@@ -620,6 +796,49 @@
                 .Select(x => x.Market)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Count();
+        }
+    }
+    private async Task FindProfitableMarketsAsync()
+    {
+        profitError = null;
+        profitResults.Clear();
+
+        if (profitCommodityId <= 0)
+        {
+            profitError = "Please select a commodity.";
+            return;
+        }
+
+        if (profitOriginMarketId <= 0)
+        {
+            profitError = "Please select the origin market.";
+            return;
+        }
+
+        if (profitQuantity <= 0)
+        {
+            profitError = "Quantity must be greater than zero.";
+            return;
+        }
+
+        try
+        {
+            profitLoading = true;
+
+            profitResults =await service.FindProfitableMarketsAsync(profitCommodityId,profitOriginMarketId,profitQuantity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Error finding profitable markets.");
+
+            profitError =
+                "Unable to calculate market opportunities.";
+        }
+        finally
+        {
+            profitLoading = false;
         }
     }
  private readonly string[] RegionChartColors =

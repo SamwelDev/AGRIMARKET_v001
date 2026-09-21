@@ -56,7 +56,11 @@ public class CommodityDto
     public ICollection<PriceDto> Prices { get; set; } = new HashSet<PriceDto>();
 
 }
-
+public class MarketOptionDto
+{
+    public long Id { get; set; }
+    public string? Name { get; set; }
+}
 public class CompareDto
 {
     public string? PriceType { get; set; }
@@ -75,4 +79,24 @@ public class CompareDto
     public decimal? MaxPricePercentageChange { get; set; }
     public DateTimeOffset OldRecordedAt { get; set; }
     public DateTimeOffset NewRecordedAt { get; set; }
+}
+public class ProfitDto
+{
+    public long MarketId { get; set; }
+    public string? MarketName { get; set; }
+    public decimal PricePerUnit { get; set; }
+    public decimal Quantity { get; set; }
+    public double DistanceKm { get; set; }
+    public double DurationMinutes { get; set; }
+    public decimal GrossRevenue { get; set; }
+    public decimal EstimatedTransportCost { get; set; }
+    public decimal EstimatedNetRevenue { get; set; }
+    public string? Currency { get; set; }
+}
+public class FindProfitableMarketsRequest
+{
+    public long CommodityId { get; set; }
+    public long OriginMarketId { get; set; }
+
+    public decimal Quantity { get; set; }
 }

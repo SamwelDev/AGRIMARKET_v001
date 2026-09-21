@@ -1,12 +1,15 @@
 ﻿using AGRIMARKET.APPLICATION.APPLICATION.IR.IR.MKT;
+using AGRIMARKET.APPLICATION.APPLICATION.IS.IS.EXTAPI;
 using AGRIMARKET.DOMAIN.DOMAIN.MODELS.MODEL.MKT;
 using AGRIMARKET.DOMAIN.DOMAIN.MODELS.MODEL.STR;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.CONTEXT;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.RESPOSITORY.STR;
+using AGRIMARKET.INFRASTRUCTURE.INFRA.SV;
 using AGRIMARKET.RESOURCES.RESOURCE.ENUMS;
 using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.MKT;
 using AGRIMARKET.RESOURCES.RESOURCES.DTOS.DTO.STR;
 using AGRIMARKET.RESOURCES.RESOURCES.HELPERS.HELPER.PAGINATION;
+using AGRIMARKET.RESOURCES.RESOURCES.RESPONSE;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,11 +23,13 @@ public class MktRepository : IMktRepository
 {
     private readonly AgriMarketContext agriMarketContext;
     private readonly ILogger<MktRepository> logger;
+    private readonly IRouteConfigurationClient client;
 
-    public MktRepository(AgriMarketContext agriMarket, ILogger<MktRepository> _logger)
+    public MktRepository(AgriMarketContext agriMarket, ILogger<MktRepository> _logger,IRouteConfigurationClient _client)
     {
         agriMarketContext = agriMarket;
         logger = _logger;
+        client = _client;
     }
     #region[MKT]
     public async Task<PaginatedResult<MarketDto>> GetAllMarketsAsync(CancellationToken cancellation, int pageSize, int pageNum)
@@ -67,7 +72,6 @@ public class MktRepository : IMktRepository
         return new MarketDto
         {
             Name = data?.Name,
-
             Prices = data.Prices.Select(x => new PriceDto
             {
                 PriceType = x.PriceType,
@@ -109,6 +113,95 @@ public class MktRepository : IMktRepository
             agriMarketContext.Markets.RemoveRange(deleteData);
         await agriMarketContext.SaveChangesAsync(cancellation);
     }
+    public async Task<List<ProfitDto>> FindProfitableMarketsAsync(long commodityId,long originMarketId,decimal quantity,CancellationToken cancellationToken = default)
+    {
+       
+        if (quantity <= 0)
+        {
+            throw new ArgumentException("Quantity must be greater than zero.",nameof(quantity));
+        }
+        var commodityExists = await agriMarketContext.Commodities
+            .AsNoTracking()
+            .AnyAsync(
+                x => x.Id == commodityId,
+                cancellationToken);
+
+        if (!commodityExists)
+        {
+            throw new InvalidOperationException($"Commodity with ID {commodityId} was not found.");
+        }
+        var originMarket = await agriMarketContext.Markets.AsNoTracking().FirstOrDefaultAsync(x => x.Id == originMarketId,cancellationToken);
+        if (originMarket == null)
+        {
+            throw new InvalidOperationException(
+                $"Origin market with ID {originMarketId} was not found.");
+        }
+        if (!originMarket.Latitude.HasValue || !originMarket.Longitude.HasValue)
+        {
+            throw new InvalidOperationException($"Origin market '{originMarket.Name}' does not have coordinates.");
+        }
+        var prices = await agriMarketContext.Prices.AsNoTracking().Include(x => x.Market)
+            .Where(x =>x.CommodityId == commodityId && x.MarketId.HasValue && x.Market != null && x.Market.Latitude.HasValue &&
+                x.Market.Longitude.HasValue)
+            .ToListAsync(cancellationToken);
+        if (prices.Count == 0)
+        {
+            return [];
+        }
+        var latestPrices = prices.GroupBy(x => x.MarketId!.Value).Select(group => group.OrderByDescending(x => x.RecordedAt).First()).ToList();
+        var destinations = latestPrices
+            .Where(x => x.MarketId.HasValue && x.MarketId.Value != originMarketId && x.Market != null &&x.Market.Latitude.HasValue &&x.Market.Longitude.HasValue)
+            .Select(x => new RouteDestinationRequest
+            {
+                MarketId = x.MarketId!.Value,
+                Latitude = x.Market!.Latitude!.Value,
+                Longitude = x.Market.Longitude!.Value
+            })
+            .ToList();
+        if (destinations.Count == 0)
+        {
+            return [];
+        }
+        var distances = await client.GetDistancesAsync(originMarket.Latitude.Value,originMarket.Longitude.Value,destinations,cancellationToken);
+        if (distances.Count == 0)
+        {
+            return [];
+        }
+        var results = new List<ProfitDto>();
+        foreach (var price in latestPrices)
+        {
+            if (!price.MarketId.HasValue)
+            {
+                continue;
+            }
+            if (price.MarketId.Value == originMarketId)
+            {
+                continue;
+            }
+            var distance = distances.FirstOrDefault(
+                x => x.MarketId == price.MarketId.Value);
+
+            if (distance == null)
+            {
+                continue;
+            }
+            var grossRevenue = price.Price * quantity;
+            results.Add(new ProfitDto
+            {
+                MarketId = price.MarketId.Value,
+                MarketName = price.Market?.Name,
+                PricePerUnit = price.Price,
+                Quantity = quantity,
+                DistanceKm = distance.DistanceKm,
+                DurationMinutes = distance.DurationMinutes,
+                GrossRevenue = grossRevenue,
+                EstimatedTransportCost = 0,
+                EstimatedNetRevenue = grossRevenue,
+                Currency = "TZS"
+            });
+        }
+        return results.OrderByDescending(x => x.GrossRevenue).ToList();
+    }   
     #endregion
 
     #region[CMDTIES]
