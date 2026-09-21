@@ -10,6 +10,8 @@ public  class MarketDto
     public long Id { get; set; }
     public string? Name { get; set; }
     public long? DistrictId { get; set; }
+    public double? Longitude { get; set; }
+    public double? Latitude { get; set; }
     public ICollection<PriceDto> Prices { get; set; } = new HashSet<PriceDto>();
 }
 public class PriceDto

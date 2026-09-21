@@ -26,6 +26,8 @@ namespace AGRIMARKET.API.Endpoints
         {
             var import = await externalDataImpoter.ImportPricesAsync(date,cancellationToken);
             return Ok(import);
+            
         }
+
     }
 }

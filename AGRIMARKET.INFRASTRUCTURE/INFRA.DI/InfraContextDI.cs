@@ -1,5 +1,6 @@
 ﻿using AGRIMARKET.APPLICATION.APPLICATION.IR.IR.MKT;
 using AGRIMARKET.APPLICATION.APPLICATION.IR.IR.STR;
+using AGRIMARKET.APPLICATION.APPLICATION.IS.IS.EXTAPI;
 using AGRIMARKET.APPLICATION.APPLICATION.SERVICES.SERVICE.IS_02;
 using AGRIMARKET.APPLICATION.APPLICATION.SERVICES.SERVICES.IS;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.AUTO;
@@ -8,6 +9,7 @@ using AGRIMARKET.INFRASTRUCTURE.INFRA.CONTEXT;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.INFRA.SV_02;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.REPOSITORY.MKT;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.RESPOSITORY.STR;
+using AGRIMARKET.INFRASTRUCTURE.INFRA.SV;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +40,9 @@ public static class InfraContextDI
             client.BaseAddress = new Uri("https://localhost:7064/");
         });
         // CLUSTER 04
+        services.AddHttpClient<IRouteConfigurationClient, RouteConfigurationClient>();
         services.AddHostedService<ExternalImportBackground>();
+        services.AddScoped<IMarketCoordinateUpdate, MarketCoordinateUpdate>();
         return services;
     }
 }
