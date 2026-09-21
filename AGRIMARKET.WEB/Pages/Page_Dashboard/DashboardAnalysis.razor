@@ -8,374 +8,565 @@
 <div class="py-3 px-4">
     @if (loading)
     {
-        <div class="dashboard-loading">
-            <div class="spinner-border"></div>
-            <p>Loading market prices...</p>
-        </div>
+        <DataLoader />
+
     }
     else if (prices.Count == 0)
     {
-        <div class="alert alert-warning">
+        <div class="alert alert-warning">Iiom
             No market price data available.
         </div>
     }
     else
     {
+
         <div class="agrimarket-dashboard">
-
-            <div class="dashboard-header">
-
-                <div>
-                    <h1> AgriMarket Tanzania</h1>
-                    <p>Daily Agriculture Price Trends</p>
-                </div>
-
-                <div class="table-status">
-                    <span class="live-dot"></span>
-
-                    <small>Last Updated</small>
-                    <strong class="badge bg-success">
-                        @LastUpdated.ToString("dd MMM yyyy")
-                    </strong>
-                </div>  
-           
-            </div>
-            <div class="dashboard-filters">
-                <div class="filter-group">
-                    <label>Region</label>
-
-                    <select @bind="selectedRegion" @bind:after="RegionChanged">
-                        <option value="">All regions</option>
-                        @foreach (var region in Regions)
-                        {
-                            <option value="@region">@region</option>
-                        }
-                    </select>
-
-                </div>
-                <div class="filter-group">
-                    <label>Market</label>
-                    <select @bind="selectedMarket">
-                        <option value="">All markets</option>
-                        @foreach (var market in Markets)
-                        {
-                            <option value="@market">@market</option>
-                        }
-                    </select>
-                </div>
-
-
-                <div class="filter-group">
-                    <label>Commodity</label>
-
-                    <select @bind="selectedCommodity">
-                        <option value="">All commodities</option>
-
-                        @foreach (var commodity in Commodities)
-                        {
-                            <option value="@commodity"> @commodity</option>
-                        }
-                    </select>
-                </div>
-
-            </div>
-            <div class="summary-grid">
-
-                <div class="summary-card">
-
-                    <div class="summary-value">
-                        TZS @AverageMaxPrice.ToString("N0")/=
+            <div class="dashboard-sticky-header">
+                <div class="dashboard-header">
+                    <div class="dashboard-brand">
+                        <h1>AgriMarket Tanzania</h1>
+                        <p>Daily Agriculture Price Trends</p>
                     </div>
-
-                    <div class="summary-label">
-                        Avg Max Price
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <div class="summary-value">
-                        TZS @AverageMinPrice.ToString("N0")/=
-                    </div>
-
-                    <div class="summary-label">
-                        Avg Min Price
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <div class="summary-value commodity-value">
-                        @TopCommodity
-                    </div>
-
-                    <div class="summary-label">
-                        Top Commodity
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <div class="summary-value">
-                        @CommodityCount
-                    </div>
-
-                    <div class="summary-label">
-                        Commodity Count
-                    </div>
-
-                </div>
-
-            </div>
-            <div class="dashboard-panel trend-panel">
-                <div class="panel-title">
-                    <div>
-                        <h6>Market Price Trend At @DateTime.Now.ToString("HH:mm")</h6>
-                        <small class="small-word">
-                            @if (!string.IsNullOrWhiteSpace(selectedCommodity))
-                            {
-                                @selectedCommodity
-                            }
-                            else
-                            {
-                                @:Latest commodity price movement
-                            }
-                        </small>
-                    </div>
-
-                    <div class="trend-status">
+                    <div class="table-status">
                         <span class="live-dot"></span>
-                        LIVE TREND
+                        <div class="status-text">
+                            <small>Last Updated</small>
+                            <strong class="badge bg-success">
+                                @LastUpdated.ToString("dd MMM yyyy")
+                            </strong>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="dashboard-filters">
+
+                    <div class="filter-group">
+                        <label>Region</label>
+
+                        <select @bind="selectedRegion"
+                                @bind:after="RegionChanged">
+
+                            <option value="">All regions</option>
+
+                            @foreach (var region in Regions)
+                            {
+                                <option value="@region">
+                                    @region
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+
+                    <div class="filter-group">
+                        <label>Market</label>
+
+                        <select @bind="selectedMarket">
+
+                            <option value="">All markets</option>
+
+                            @foreach (var market in Markets)
+                            {
+                                <option value="@market">
+                                    @market
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+
+                    <div class="filter-group">
+                        <label>Commodity</label>
+
+                        <select @bind="selectedCommodity">
+
+                            <option value="">All commodities</option>
+
+                            @foreach (var commodity in Commodities)
+                            {
+                                <option value="@commodity">
+                                    @commodity
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                </div>
+                <div class="summary-grid">
+
+                    <div class="summary-card">
+
+                        <div class="summary-value">
+                            TZS @AverageMaxPrice.ToString("N0")/=
+                        </div>
+
+                        <div class="summary-label">
+                            Avg Max Price
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-value">
+                            TZS @AverageMinPrice.ToString("N0")/=
+                        </div>
+
+                        <div class="summary-label">
+                            Avg Min Price
+                        </div>
+
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-value commodity-value">
+                            @TopCommodity
+                        </div>
+
+                        <div class="summary-label">
+                            Top Commodity
+                        </div>
+
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">
+                            @CommodityCount
+                        </div>
+
+                        <div class="summary-label">
+                            Commodity Count
+                        </div>
+
                     </div>
 
                 </div>
 
-
-                @if (FilteredPrices.Any())
-                {
-                    var trendData = FilteredPrices.OrderBy(x => x.RecordedAt).TakeLast(12).ToList();
-                    var maxChartPrice = trendData
-                        .SelectMany(x => new[]
-                        {
-                             x.MinPrice,
-                             x.Price,
-                             x.MaxPrice
-                        })
-                        .DefaultIfEmpty(1)
-                        .Max();
-
-                    <div class="trend-chart">
-                        <div class="trend-y-axis">
-
-                            <span>
-                                TZS @maxChartPrice.ToString("N0")
-                            </span>
-
-                            <span>
-                                TZS @((maxChartPrice * .75m).ToString("N0"))
-                            </span>
-
-                            <span>
-                                TZS @((maxChartPrice * .50m).ToString("N0"))
-                            </span>
-
-                            <span>
-                                TZS @((maxChartPrice * .25m).ToString("N0"))
-                            </span>
-
-                            <span>
-                                TZS 0
-                            </span>
-
-                        </div>
-                        <div class="trend-chart-body">
-
-                            <div class="chart-grid-lines">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
+            </div>
+            <main>
+                <div class="dashboard-chart-row">
+                    <section class="dashboard-panel trend-panel">
+                        <div class="panel-title">
+                            <div class="panel-heading">
+                                <h6>
+                                    Market Price Trend At @DateTime.Now.ToString("HH:mm")
+                                </h6>
+                                <small class="small-word">
+                                    @if (!string.IsNullOrWhiteSpace(selectedCommodity))
+                                    {
+                                        @selectedCommodity
+                                    }
+                                    else
+                                    {
+                                        @:Latest commodity price movement
+                                    }
+                                </small>
                             </div>
+                            <div class="trend-status">
+                                <span class="live-dot"></span>
+                                LIVE TREND
+                            </div>
+                        </div>
 
+                        @if (FilteredPrices.Any())
+                        {
+                            var trendData = FilteredPrices
+                                .OrderBy(x => x.RecordedAt)
+                                .TakeLast(12)
+                                .ToList();
+                            var maxChartPrice = trendData
+                                .SelectMany(x => new[]
+                                { x.MinPrice,x.Price, x.MaxPrice
+                                })
+                                .DefaultIfEmpty(1)
+                                .Max();
+                            <div class="trend-chart">
+                                <div class="trend-y-axis">
+                                    <span>
+                                        TZS @maxChartPrice.ToString("N0")
+                                    </span>
+                                    <span>
+                                        TZS @((maxChartPrice * .75m).ToString("N0"))
+                                    </span>
+                                    <span>
+                                        TZS @((maxChartPrice * .50m).ToString("N0"))
+                                    </span>
+                                    <span>
+                                        TZS @((maxChartPrice * .25m).ToString("N0"))
+                                    </span>
+                                    <span>
+                                        TZS 0
+                                    </span>
+                                </div>
+                                <div class="trend-chart-body">
+                                    <div class="chart-grid-lines">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                    <div class="trend-bars">
+                                        @foreach (var item in trendData)
+                                        {
+                                            var height = maxChartPrice > 0? (double)(item.Price / maxChartPrice) * 100: 0;
+                                            <div class="trend-column">
+                                                <div class="trend-tooltip">
+                                                    <strong>
+                                                        TZS @item.Price.ToString("N0")
+                                                    </strong>
 
-                            <div class="trend-bars">
+                                                    <small>
+                                                        @item.RecordedAt.ToString("dd MMM yyyy")
+                                                    </small>
+                                                </div>
+                                                <div class="trend-bar-container">
+                                                    <div class="trend-bar"
+                                                         style="height:@($"{height}%")">
+                                                    </div>
 
-                                @foreach (var item in trendData)
-                                {
-                                    var height = maxChartPrice > 0
-                                        ? (double)(item.Price / maxChartPrice) * 100
-                                        : 0;
+                                                    <div class="trend-point">
+                                                        ●
+                                                    </div>
 
-                                    <div class="trend-column">
+                                                </div>
+                                                <small class="trend-date">
+                                                    @item.RecordedAt.ToString("dd MMM")
+                                                </small>
 
-                                        <div class="trend-tooltip">
-                                            <strong>
-                                                TZS @item.Price.ToString("N0")
-                                            </strong>
-
-                                            <small>
-                                                @item.RecordedAt.ToString("dd MMM")
-                                            </small>
-                                        </div>
-
-                                        <div class="trend-bar-container">
-
-                                            <div class="trend-bar"
-                                                 style="height:@($"{height}%")">
                                             </div>
-
-                                            <div class="trend-point">
-                                                ●
-                                            </div>
-
-                                        </div>
-
-                                        <small class="trend-date">
-                                            @item.RecordedAt.ToString("dd MMM")
-                                        </small>
+                                        }
 
                                     </div>
-                                }
 
+                                </div>
+
+                            </div>
+                            <div class="trend-legend">
+                                <span>
+                                    <i class="current"></i>
+                                    Current Price
+                                </span>
+
+                                <span>
+                                    <i class="minimum"></i>
+                                    Min Price
+                                </span>
+
+                                <span>
+                                    <i class="maximum"></i>
+                                    Max Price
+                                </span>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="trend-empty">
+                                No trend data available for the selected filters.
+                            </div>
+                        }
+
+                    </section>
+                    <section class="dashboard-panel regional-price-panel">
+                        <div class="regional-panel-header">
+                            <div>
+                                <h6>
+                                     Price Range by Regions
+                                </h6>
+                                <small class="small-word">
+                                    Distribution of current market prices across regions (TZS)
+                                </small>
+                            </div>
+
+                            <div class="latest-data-badge">
+                                <span class="live-dot"></span>
+                                Latest Data
                             </div>
 
                         </div>
 
-                    </div>
-                    <div class="trend-legend">
+                        @if (RegionalPriceData.Any())
+                        {
+                            <div class="regional-chart-content">
+                                <div class="regional-donut-wrapper">
 
-                        <span>
-                            <i class="current"></i>
-                            Current Price
-                        </span>
+                                    <div class="regional-donut-hover">
 
-                        <span>
-                            <i class="minimum"></i>
-                            Min Price
-                        </span>
+                                        <div class="regional-donut"
+                                             style="@RegionalDonutStyle">
 
-                        <span>
-                            <i class="maximum"></i>
-                            Max Price
-                        </span>
+                                            <div class="regional-donut-center">
 
-                    </div>
+                                                <span>Total Markets</span>
 
-                }
-                else
-                {
-                    <div class="trend-empty">
-                        No trend data available for the selected filters.
-                    </div>
-                }
+                                                <strong>
+                                                    @RegionalMarketCount
+                                                </strong>
 
-            </div>
+                                                <small>
+                                                    Regions
+                                                </small>
 
-            <div class="dashboard-panel">
+                                            </div>
 
-                <div class="panel-title">
-                    Latest Agriculture Prices <small class="small-word">(In 100 Kg)</small>
+                                        </div>
+
+                                        <div class="regional-donut-tooltip">
+
+                                            <strong>
+                                                Regional Price Distribution
+                                            </strong>
+
+                                            @foreach (var region in RegionalPriceData)
+                                            {
+                                                <div class="regional-tooltip-row">
+
+                                                    <span class="regional-tooltip-region">
+
+                                                        <i style="background:@region.Color"></i>
+
+                                                        @region.Region
+
+                                                    </span>
+
+                                                    <strong>
+                                                        @region.Share.ToString("0")%
+                                                    </strong>
+
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <div class="regional-data">
+
+                                    <div class="regional-data-header">
+                                        <span>Region</span>
+                                        <span>Price Range (TZS)</span>
+                                        <span>Share</span>
+                                    </div>
+
+
+                                    @foreach (var region in RegionalPriceData)
+                                    {
+                                        <div class="regional-data-row">
+
+                                            <div class="regional-name">
+
+                                                <span class="region-color"
+                                                      style="background:@region.Color">
+                                                </span>
+
+                                                <strong>
+                                                    @region.Region
+                                                </strong>
+
+                                            </div>
+
+
+                                            <div class="regional-range">
+                                                @region.MinPrice.ToString("N0")
+                                                –
+                                                @region.MaxPrice.ToString("N0")
+                                            </div>
+
+
+                                            <div class="regional-share">
+                                                @region.Share.ToString("0")%
+                                            </div>
+
+                                        </div>
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="regional-chart-info">
+
+                                <div class="info-icon">
+                                    i
+                                </div>
+
+                                <div>
+                                    <strong>What this shows</strong>
+
+                                    <p>
+                                        The chart shows the real price range
+                                           and the share of
+                                        current market prices for each region.
+                                    </p>
+                                </div>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="trend-empty">
+                                No regional price data available.
+                            </div>
+                        }
+
+                    </section>
+
                 </div>
+                <section class="dashboard-panel price-panel">
+                    <div class="panel-title">
+                        <div class="panel-heading">
+                            <h6>
+                                Latest Agriculture Prices
+                            </h6>
 
-                <div class="table-responsive">
+                            <small class="small-word">
+                                (In 100 Kg)
+                            </small>
 
-                    <table class="table">
+                        </div>
 
-                        <thead>
-                            <tr>
-                                <th>Commodity <small class="small-word">(Bidhaa)</small></th>
-                                <th>Market</th>
-                                <th>District</th>
-                                <th>Region</th>
-                                <th>Unit<small class="small-word">(In 100 Kg)</small></th>
-                                <th>Min <small class="small-word">(In Tsh)</small></th>
-                                <th>Price <small class="small-word">(In Tsh)</small></th>
-                                <th>Max <small class="small-word">(In Tsh)</small></th>
-                                <th>Type</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
+                    </div>
 
-                        <tbody>
 
-                            @foreach (var item in FilteredPrices)
-                            {
+                    <div class="table-responsive">
+
+                        <table class="table">
+
+                            <thead>
+
                                 <tr>
 
-                                    <td>
-                                        <strong>
-                                            @item.Commodity
-                                        </strong>
-                                    </td>
+                                    <th>
+                                        Commodity
+                                        <small class="small-word">
+                                            (Bidhaa)
+                                        </small>
+                                    </th>
 
-                                    <td>
-                                        @item.Market
-                                    </td>
+                                    <th>Market</th>
 
-                                    <td>
-                                        @item.District
-                                    </td>
+                                    <th>District</th>
 
-                                    <td>
-                                        @item.Region
-                                    </td>
+                                    <th>Region</th>
 
-                                    <td>
-                                        @item.Unit
-                                    </td>
+                                    <th>
+                                        Unit
+                                        <small class="small-word">
+                                            (In 100 Kg)
+                                        </small>
+                                    </th>
 
-                                    <td>
-                                        @item.MinPrice.ToString("N0")
-                                    </td>
+                                    <th>
+                                        Min
+                                        <small class="small-word">
+                                            (In Tsh)
+                                        </small>
+                                    </th>
 
-                                    <td class="price">
-                                        @item.Price.ToString("N0")
-                                    </td>
+                                    <th>
+                                        Price
+                                        <small class="small-word">
+                                            (In Tsh)
+                                        </small>
+                                    </th>
 
-                                    <td>
-                                        @item.MaxPrice.ToString("N0")
-                                    </td>
+                                    <th>
+                                        Max
+                                        <small class="small-word">
+                                            (In Tsh)
+                                        </small>
+                                    </th>
 
-                                    <td>
-                                        @item.PriceType
-                                    </td>
+                                    <th>Type</th>
+                                    <th>Date</th>
 
-                                    <td>
-                                        @item.RecordedAt.ToString("dd MMM yyyy")
-                                    </td>
 
                                 </tr>
-                            }
 
-                        </tbody>
+                            </thead>
 
-                    </table>
 
-                </div>
+                            <tbody>
 
-            </div>
+                                @foreach (var item in FilteredPrices)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            <strong>
+                                                @item.Commodity
+                                            </strong>
+                                        </td>
+
+
+                                        <td>
+                                            @item.Market
+                                        </td>
+
+                                        <td>
+                                            @item.District
+                                        </td>
+
+                                        <td>
+                                            @item.Region
+                                        </td>
+
+                                        <td>
+                                            @item.Unit
+                                        </td>
+
+                                        <td>
+                                            @item.MinPrice.ToString("N0")
+                                        </td>
+
+                                        <td class="price">
+                                            @item.Price.ToString("N0")
+                                        </td>
+
+                                        <td>
+                                            @item.MaxPrice.ToString("N0")
+                                        </td>
+
+                                        <td>
+                                            @item.PriceType
+                                        </td>
+
+                                        <td>
+                                            @item.RecordedAt.ToString("dd MMM yyyy")
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+            </main>
 
         </div>
+
     }
 </div>
 
 @code {
-
     private bool loading = true;
     private List<PriceDto> prices = [];
     private List<RegionDto> regions = [];
     private string selectedRegion = "";
     private string selectedMarket = "";
     private string selectedCommodity = "";
-    private IEnumerable<PriceDto> FilteredPrices => prices.Where(x => (string.IsNullOrWhiteSpace(selectedMarket) || x.Market == selectedMarket)
-            && (string.IsNullOrWhiteSpace(selectedCommodity) || x.Commodity == selectedCommodity));
+    private IEnumerable<PriceDto> FilteredPrices => prices.Where(x => (string.IsNullOrWhiteSpace(selectedMarket) || x.Market == selectedMarket) && (string.IsNullOrWhiteSpace(selectedCommodity) || x.Commodity == selectedCommodity));
     private decimal AverageMaxPrice => FilteredPrices.Any()? FilteredPrices.Average(x => x.MaxPrice): 0;
     private decimal AverageMinPrice => FilteredPrices.Any() ? FilteredPrices.Average(x => x.MinPrice) : 0;
     private string TopCommodity => FilteredPrices.Where(x => !string.IsNullOrWhiteSpace(x.Commodity)) .GroupBy(x => x.Commodity).OrderByDescending(x => x.Count()).Select(x => x.Key).FirstOrDefault()?? "-";
@@ -401,13 +592,7 @@
         {
             loading = false;
         }
-    }
-
-    
-    
-    
-    
-    
+    }    
     private void RegionChanged()
     {
         selectedMarket = "";
@@ -426,33 +611,98 @@
          .Where(x => !string.IsNullOrWhiteSpace(x))
          .Distinct()
          .OrderBy(x => x);
+    private int RegionalMarketCount
+    {
+        get
+        {
+            return FilteredPrices
+                .Where(x => !string.IsNullOrWhiteSpace(x.Market))
+                .Select(x => x.Market)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Count();
+        }
+    }
+ private readonly string[] RegionChartColors =
+{
+    "#2878E5",
+    "#45B85A",
+    "#FF7A21",
+    "#7351D1",
+    "#249FC1",
+    "#E45757",
+    "#8E6BBE",
+    "#14A58A"
+};
+    private IEnumerable<PriceDto> RegionalPriceData
+    {
+        get
+        {
+            var data = FilteredPrices
+                .Where(x => !string.IsNullOrWhiteSpace(x.Region))
+                .GroupBy(x => x.Region)
+                .Select((group, index) =>
+                {
+                    var latest = group
+                        .OrderByDescending(x => x.RecordedAt)
+                        .First();
 
+                    return new PriceDto
+                    {
+                        Region = group.Key,
+                        MinPrice = group.Min(x => x.MinPrice),
+                        MaxPrice = group.Max(x => x.MaxPrice),
+                        CurrentPrice = latest.Price,
+                        Color = RegionChartColors[index % RegionChartColors.Length]
+                    };
+                })
+                .OrderByDescending(x => x.CurrentPrice)
+                .ToList();
+            var total = data.Sum(x => x.CurrentPrice);
+            if (total > 0)
+            {
+                foreach (var item in data)
+                {
+                    item.Share = (item.CurrentPrice / total) * 100;
+                }
+            }
 
-    private IEnumerable<string> Commodities =>
-        prices
-            .Select(x => x.Commodity)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct()
-            .OrderBy(x => x);
+            return data;
+        }
+    }
+    private string RegionalDonutStyle
+    {
+        get
+        {
+            var data = RegionalPriceData.ToList();
 
+            if (data.Count == 0)
+                return "";
 
+            var segments = new List<string>();
+
+            decimal current = 0;
+
+            foreach (var item in data)
+            {
+                var start = current;
+                var end = current + item.Share;
+
+                segments.Add(
+                    $"{item.Color} {start}% {end}%"
+                );
+
+                current = end;
+            }
+
+            return $"background: conic-gradient({string.Join(", ", segments)});";
+        }
+    }
+    private IEnumerable<string> Commodities => prices.Select(x => x.Commodity).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x);
     private DateTimeOffset LastUpdated =>prices.Count == 0 ? DateTimeOffset.MinValue: prices.Max(x => x.RecordedAt);
     private IEnumerable<string> Regions => regions.Select(x => x.Name).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x);
-
-    private IEnumerable<PriceDto> MarketTicker =>
-    FilteredPrices
-        .GroupBy(x => x.Commodity)
-        .Select(g => g.OrderByDescending(x => x.RecordedAt).First())
-        .OrderByDescending(x => x.RecordedAt)
-        .Take(6);
-
-
-    private int RisingCount =>
-        FilteredPrices.Count(x => GetChangePercentage(x) > 0);
-
-
-    private int FallingCount =>
-        FilteredPrices.Count(x => GetChangePercentage(x) < 0);
+    private IEnumerable<PriceDto> MarketTicker => FilteredPrices.GroupBy(x => x.Commodity).Select(g => g.OrderByDescending(x => x.RecordedAt).First()).OrderByDescending(x => x.RecordedAt).Take(6);
+    private int RisingCount => FilteredPrices.Count(x => GetChangePercentage(x) > 0);
+    private int FallingCount =>FilteredPrices.Count(x => GetChangePercentage(x) < 0);
     private decimal GetChangePercentage(PriceDto item)
     {
         var previous = prices

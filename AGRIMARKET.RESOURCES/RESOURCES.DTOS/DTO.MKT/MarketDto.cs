@@ -31,6 +31,11 @@ public class PriceDto
     public long SourceId { get; set; }
     public long? CommodityId { get; set; }
     public long? MarketId { get; set; }
+    //XTra
+  
+    public decimal CurrentPrice { get; set; }
+    public decimal Share { get; set; }
+    public string Color { get; set; } = "";
 
 }
 public class SourceDto
