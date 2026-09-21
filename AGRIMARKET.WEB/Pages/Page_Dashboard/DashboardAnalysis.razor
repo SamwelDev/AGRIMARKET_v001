@@ -3,7 +3,7 @@
 @inject IApiMarketService service
 @inject ILogger<DashboardAnalysis> logger
 @layout DashboardLayout
-<PageTitle>AgriMarket | Dash:Analysis</PageTitle>
+<PageTitle>AgriMarket | Creating Opportinuities</PageTitle>
 
 <div class="py-3 px-4">
     @if (loading)
@@ -60,11 +60,8 @@
 
                     <div class="filter-group">
                         <label>Market</label>
-
                         <select @bind="selectedMarket">
-
                             <option value="">All markets</option>
-
                             @foreach (var market in Markets)
                             {
                                 <option value="@market">
@@ -164,7 +161,7 @@
                         </div>
                     </div>
 
-                    <div class="profitability-filters">
+                    <div class="dashboard-filters">
                         <div class="filter-group">
                             <label>Commodity</label>
                             <select @bind="profitCommodityId">
@@ -180,10 +177,7 @@
 
                         <div class="filter-group">
                             <label>Quantity (KG)</label>
-
-                            <input type="number"
-                                   min="1"
-                                   @bind="profitQuantity" />
+                            <input type="number" min="1"class="me-3" @bind="profitQuantity" />
                         </div>
 
                         <div class="filter-group">
@@ -205,15 +199,14 @@
                             </select>
                         </div>
 
-                        <button class="btn btn-primary"@onclick="FindProfitableMarketsAsync"disabled="@profitLoading">
-
+                        <button class="btn btn-outline-dark btn-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-round" @onclick="FindProfitableMarketsAsync" disabled="@profitLoading" title="Find Markets">
                             @if (profitLoading)
                             {
                                 <span>Calculating...</span>
                             }
                             else
                             {
-                                <span>Find Markets</span>
+                                <span></span>
                             }
 
                         </button>
