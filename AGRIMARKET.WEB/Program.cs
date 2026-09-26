@@ -1,7 +1,9 @@
 using AGRIMARKET.APPLICATION.APPLICATION.SERVICES.SERVICE.IS_02;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.DI;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.REPOSITORIES.INFRA.SV_02;
+using AGRIMARKET.RESOURCES.RESOURCES.HELPERS.RESOURCES.THEMES;
 using AGRIMARKET.WEB;
+using AGRIMARKET.WEB.Layout;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,5 +15,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped(opt => new HttpClient
 {
     BaseAddress = new Uri("https://localhost:7064/")
-}); builder.Services.AddScoped<IApiMarketService, ApiMarketService>();
+}); 
+builder.Services.AddScoped<IApiMarketService, ApiMarketService>();
+builder.Services.AddScoped<ThemeWrapper>();
 await builder.Build().RunAsync();
