@@ -1,0 +1,69 @@
+﻿@implements IDisposable
+@inject ThemeWrapper Theme
+@inject IJSRuntime JS
+@inject ILogger<TogglerTheme> Logger
+
+<button type="button"
+        class="theme-toggle"
+        @onclick="Toggle"
+        title="Toggle light/dark mode"
+        aria-label="Toggle light/dark mode">
+
+    <i class="bi @(Theme.IsDark ? "bi-sun-fill" : "bi-moon-fill")"></i>
+
+    <span>@(Theme.IsDark ? "Light mode" : "Dark mode")</span>
+</button>
+
+@code {
+    private Action? _onThemeChanged;
+
+    protected override void OnInitialized()
+    {
+        _onThemeChanged = () => InvokeAsync(StateHasChanged);
+        Theme.OnChange += _onThemeChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        var saved = await JS.InvokeAsync<string?>("agriTheme.get");
+
+        if (string.IsNullOrWhiteSpace(saved))
+        {
+            // Default to light mode
+            Theme.Set(false);
+        }
+        else
+        {
+            Theme.Set(saved == "dark");
+        }
+
+        await ApplyTheme();
+    }
+
+    private async Task Toggle()
+    {
+        Theme.Toggle();
+
+        await ApplyTheme();
+
+        Logger.LogInformation(
+            "Theme changed to {Theme}",
+            Theme.IsDark ? "dark" : "light");
+    }
+
+    private async Task ApplyTheme()
+    {
+        await JS.InvokeVoidAsync(
+            "agriTheme.set",
+            Theme.IsDark ? "dark" : "light");
+    }
+
+    public void Dispose()
+    {
+        if (_onThemeChanged != null)
+            Theme.OnChange -= _onThemeChanged;
+    }
+}
