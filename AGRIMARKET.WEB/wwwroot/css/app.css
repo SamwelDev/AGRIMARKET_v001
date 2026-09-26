@@ -1,3 +1,71 @@
+:root {
+    color-scheme: light;
+    --theme-bg: #eef9e8;
+    --theme-surface: #f6fff1;
+    --theme-surface-alt: #f5ffef;
+    --theme-surface-soft: #f1f7fd;
+    --theme-text: #172d50;
+    --theme-text-secondary: #617465;
+    --theme-text-muted: #8a948d;
+    --theme-primary: #126b48;
+    --theme-primary-light: #176d4b;
+    --theme-primary-dark: #0e5438;
+    --theme-border: #d4e9cd;
+    --theme-border-light: #d7ebd0;
+    --theme-border-muted: #e5ebf2;
+    --theme-input-bg: #f7fff4;
+    --theme-input-border: #c7ddc6;
+    --theme-input-text: #365344;
+    --theme-table-header: #f1f7ed;
+    --theme-table-hover: #eef8e9;
+    --theme-tooltip-bg: #ffffff;
+    --theme-tooltip-text: #172d50;
+    --theme-info-bg: #f1f7fd;
+    --theme-info-text: #304d78;
+    --theme-grid-line: #edf1ee;
+    --theme-shadow: rgba(40, 80, 50, .08);
+    --theme-shadow-strong: rgba(24, 45, 80, .15);
+    --theme-button-bg: #24634c;
+    --theme-button-hover: #1d523f;
+    --theme-button-text: #ffffff;
+    --theme-donut-center: #f6fff1;
+    --theme-scrollbar: #a8c5b0;
+    --theme-code: #c02d76;
+}
+html[data-theme="dark"] {
+    color-scheme: dark;
+    --theme-bg: #0d1713;
+    --theme-surface: #14231c;
+    --theme-surface-alt: #17291f;
+    --theme-surface-soft: #1b3025;
+    --theme-text: #e5f3ea;
+    --theme-text-secondary: #a9c1b1;
+    --theme-text-muted: #81988a;
+    --theme-primary: #5fd39b;
+    --theme-primary-light: #65dba2;
+    --theme-primary-dark: #39a875;
+    --theme-border: #294536;
+    --theme-border-light: #2c4b39;
+    --theme-border-muted: #30473b;
+    --theme-input-bg: #17291f;
+    --theme-input-border: #385846;
+    --theme-input-text: #d7e9dd;
+    --theme-table-header: #1a3024;
+    --theme-table-hover: #1c3528;
+    --theme-tooltip-bg: #1b2d24;
+    --theme-tooltip-text: #e5f3ea;
+    --theme-info-bg: #172c23;
+    --theme-info-text: #b8d8c4;
+    --theme-grid-line: #294036;
+    --theme-shadow: rgba(0, 0, 0, .25);
+    --theme-shadow-strong: rgba(0, 0, 0, .45);
+    --theme-button-bg: #287a59;
+    --theme-button-hover: #32916a;
+    --theme-button-text: #ffffff;
+    --theme-donut-center: #14231c;
+    --theme-scrollbar: #385b47;
+    --theme-code: #f08ab9;
+}
 html, body {
     font-family: 'Poppins', Helvetica;
 }
