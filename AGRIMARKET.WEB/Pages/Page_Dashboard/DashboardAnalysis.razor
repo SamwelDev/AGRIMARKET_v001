@@ -28,6 +28,7 @@
                         <p>Daily Agriculture Price Trends</p>
                     </div>
                     <div class="table-status">
+                        <button class="btn btn-success"> Light/Dark</button>
                         <span class="live-dot"></span>
                         <div class="status-text">
                             <small>Last Updated</small>
@@ -360,7 +361,7 @@
                                         <span></span>
                                         <span></span>
                                     </div>
-                                    <div class="trend-bars">
+                                    <div class="trend-chart">
                                         @foreach (var item in trendData)
                                         {
                                             var height = maxChartPrice > 0? (double)(item.Price / maxChartPrice) * 100: 0;
