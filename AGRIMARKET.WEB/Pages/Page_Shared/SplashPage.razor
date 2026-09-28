@@ -1,34 +1,29 @@
 ﻿@page "/"
 @page "/AgriMkt/Dash"
-@using AGRIMARKET.WEB.Pages.Page_Dashboard
-@inject ILogger<SplashPage> logger
 @inject NavigationManager Nav
+@inject IApiMarketService service
+@inject HelperState MarketState
+@inject ILogger<SplashPage> logger
 @layout DashboardLayout
-<PageTitle>AgriMarket |Kilimo/Biashara</PageTitle>
+
+<PageTitle>AgriMarket | Kilimo/Biashara</PageTitle>
 
 @if (ShowsSplash)
 {
     <div class="splash-screen">
-
         <div class="splash-content">
-
-            <!-- Logo -->
             <div class="logo-wrapper">
                 <div class="logo">
                     🌾
                 </div>
             </div>
-
-            <!-- Brand -->
-            <h1>AgriMarket</h1>
+            <h2>AgriMarket</h2>
 
             <p class="country">
                 TANZANIA
             </p>
 
             <div class="divider"></div>
-
-            <!-- Main message -->
             <h2>
                 Know the Price.
                 <br />
@@ -39,12 +34,10 @@
                 Agricultural market information to help
                 farmers make better selling decisions.
             </p>
-
-            <!-- Features -->
             <div class="features">
-
                 <div class="feature">
                     <span class="feature-icon">🌽</span>
+
                     <div>
                         <strong>Market Prices</strong>
                         <small>Latest crop prices</small>
@@ -52,7 +45,10 @@
                 </div>
 
                 <div class="feature">
-                    <span class="feature-icon"><i class="bi-wallet-fill fs-4 text-success"></i></span>
+                    <span class="feature-icon">
+                        <i class="bi-wallet-fill fs-4 text-success"></i>
+                    </span>
+
                     <div>
                         <strong>Price Trends</strong>
                         <small>Track market changes</small>
@@ -60,7 +56,10 @@
                 </div>
 
                 <div class="feature">
-                    <span class="feature-icon"><i class="bi-bucket text-success fs-3"></i></span>
+                    <span class="feature-icon">
+                        <i class="bi-bucket text-success fs-3"></i>
+                    </span>
+
                     <div>
                         <strong>Compare Markets</strong>
                         <small>Find better selling locations</small>
@@ -68,7 +67,10 @@
                 </div>
 
                 <div class="feature">
-                    <span class="feature-icon"><i class="bi-car-front-fill fs-3 text-success"></i></span>
+                    <span class="feature-icon">
+                        <i class="bi-car-front-fill fs-3 text-success"></i>
+                    </span>
+
                     <div>
                         <strong>Market Profitability</strong>
                         <small>Estimate transport & revenue</small>
@@ -76,21 +78,62 @@
                 </div>
 
             </div>
+            @if (string.IsNullOrWhiteSpace(loadError))
+            {
+                <div class="loading-section">
+                    <div class="loading-text">
+                        @if (!MarketState.IsLoaded)
+                        {
+                            <span>
+                                Preparing market data...
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                Market data ready...
+                            </span>
+                        }
 
-            <div class="loading-section">
+                    </div>
 
-                <div class="loading-text">
-                    <span>Preparing market data...</span>
+                    <div class="loading">
+                        <div class="loading-bar"></div>
+                    </div>
+
                 </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(loadError))
+            {
+                <div class="alert alert-danger mt-4">
 
-                <div class="loading">
-                    <div class="loading-bar"></div>
+                    <div class="mb-2">
+                        @loadError
+                    </div>
+
+                    <button class="btn btn-dark btn-sm"
+                            @onclick="LoadDataAsync"
+                            disabled="@loading">
+
+                        @if (loading)
+                        {
+                            <span>
+                                Retrying...
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                Retry
+                            </span>
+                        }
+
+                    </button>
+
                 </div>
-
-            </div>
-
+            }
             <p class="footer-text">
-                Powered by AgriMarket Tanzania
+                Powered by AgriMarket Tanzania @DateTime.Now.Year 
             </p>
 
         </div>
@@ -105,11 +148,49 @@ else
 
 @code {
     private bool ShowsSplash = true;
+    private bool loading;
+    private string? loadError;
+
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(7000);
-        ShowsSplash = false;
-        StateHasChanged();
+        await LoadDataAsync();
+    }
+
+
+    private async Task LoadDataAsync()
+    {
+        if (loading)
+            return;
+
+        try
+        {
+            loading = true;
+            ShowsSplash = true;
+            loadError = null;
+            StateHasChanged();
+            logger.LogInformation("Starting AgriMarket dashboard data loading...");
+            var pricesTask = service.GetPricesAsync(pageNum: 1,pageSize: 100);
+            var regionsTask = service.GetRegionsAsync(pageNum: 1,pageSize: 50);
+            await Task.WhenAll(pricesTask,regionsTask);
+            var pricesResponse = await pricesTask;
+            var regionsResponse = await regionsTask;
+            MarketState.Prices = pricesResponse?.Data ?? [];
+            MarketState.Regions =regionsResponse?.Data ?? [];
+            MarketState.LoadedAt =DateTimeOffset.Now;
+            MarketState.IsLoaded = true;            
+            await Task.Delay(800);
+            ShowsSplash = false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,"Failed to load AgriMarket dashboard data.");
+            ShowsSplash = true;
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
     }
 
 }
