@@ -1383,4 +1383,241 @@ table {
     .regional-name strong {
         font-size: 13px;
     }
-}*/
+}
+/*Dear Ex*/
+.splash-screen {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient( 180deg, #f7faf7 0%, #eef5ef 100% );
+    padding: 30px 20px;
+}
+
+.splash-content {
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+    animation: fadeIn 0.7s ease;
+}
+
+/* Logo */
+
+.logo-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.logo {
+    width: 82px;
+    height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    background: white;
+    font-size: 42px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Brand */
+
+h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #183c25;
+}
+
+.country {
+    margin-top: 3px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #6d8874;
+}
+
+.divider {
+    width: 45px;
+    height: 3px;
+    margin: 0 auto 24px;
+    border-radius: 10px;
+    background: #5c8d61;
+}
+
+/* Main message */
+
+h2 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 750;
+    color: #203b27;
+}
+
+.description {
+    max-width: 400px;
+    margin: 14px auto 25px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #718073;
+}
+
+/* Features */
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 10px;
+    padding: 13px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 14px;
+}
+
+.feature-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: #eef6ef;
+    font-size: 19px;
+}
+
+.feature strong {
+    display: block;
+    font-size: 12px;
+    color: #29422f;
+}
+
+.feature small {
+    display: block;
+    margin-top: 2px;
+    font-size: 10px;
+    color: #849187;
+}
+
+/* Loading */
+
+.loading-section {
+    margin-top: 28px;
+}
+
+.loading-text {
+    margin-bottom: 8px;
+    font-size: 11px;
+    color: #829087;
+}
+
+.loading {
+    width: 180px;
+    height: 4px;
+    margin: auto;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #dce7dd;
+}
+
+.loading-bar {
+    height: 100%;
+    width: 45%;
+    border-radius: inherit;
+    background: #5c8d61;
+    animation: loading 1.4s ease-in-out infinite;
+}
+
+/* Footer */
+
+.footer-text {
+    margin-top: 22px;
+    font-size: 10px;
+    color: #9aa69d;
+}
+
+/* Animations */
+
+@keyframes loading {
+
+    0% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(120%);
+    }
+
+    100% {
+        transform: translateX(400%);
+    }
+}
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+    .splash-screen {
+        padding: 20px 15px;
+    }
+
+    .logo {
+        width: 70px;
+        height: 70px;
+        font-size: 34px;
+    }
+
+    h1 {
+        font-size: 31px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .description {
+        font-size: 14px;
+    }
+
+    .features {
+        gap: 8px;
+    }
+
+    .feature {
+        padding: 10px;
+    }
+
+        .feature strong {
+            font-size: 11px;
+        }
+
+        .feature small {
+            font-size: 9px;
+        }
+}

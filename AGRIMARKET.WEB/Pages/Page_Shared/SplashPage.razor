@@ -1,0 +1,115 @@
+﻿@page "/"
+@page "/AgriMkt/Dash"
+@using AGRIMARKET.WEB.Pages.Page_Dashboard
+@inject ILogger<SplashPage> logger
+@inject NavigationManager Nav
+@layout DashboardLayout
+<PageTitle>AgriMarket |Kilimo/Biashara</PageTitle>
+
+@if (ShowsSplash)
+{
+    <div class="splash-screen">
+
+        <div class="splash-content">
+
+            <!-- Logo -->
+            <div class="logo-wrapper">
+                <div class="logo">
+                    🌾
+                </div>
+            </div>
+
+            <!-- Brand -->
+            <h1>AgriMarket</h1>
+
+            <p class="country">
+                TANZANIA
+            </p>
+
+            <div class="divider"></div>
+
+            <!-- Main message -->
+            <h2>
+                Know the Price.
+                <br />
+                Find the Market.
+            </h2>
+
+            <p class="description">
+                Agricultural market information to help
+                farmers make better selling decisions.
+            </p>
+
+            <!-- Features -->
+            <div class="features">
+
+                <div class="feature">
+                    <span class="feature-icon">🌽</span>
+                    <div>
+                        <strong>Market Prices</strong>
+                        <small>Latest crop prices</small>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon"><i class="bi-wallet-fill fs-4 text-success"></i></span>
+                    <div>
+                        <strong>Price Trends</strong>
+                        <small>Track market changes</small>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon"><i class="bi-bucket text-success fs-3"></i></span>
+                    <div>
+                        <strong>Compare Markets</strong>
+                        <small>Find better selling locations</small>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon"><i class="bi-car-front-fill fs-3 text-success"></i></span>
+                    <div>
+                        <strong>Market Profitability</strong>
+                        <small>Estimate transport & revenue</small>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="loading-section">
+
+                <div class="loading-text">
+                    <span>Preparing market data...</span>
+                </div>
+
+                <div class="loading">
+                    <div class="loading-bar"></div>
+                </div>
+
+            </div>
+
+            <p class="footer-text">
+                Powered by AgriMarket Tanzania
+            </p>
+
+        </div>
+
+    </div>
+}
+else
+{
+    <DashboardAnalysis />
+}
+
+
+@code {
+    private bool ShowsSplash = true;
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(7000);
+        ShowsSplash = false;
+        StateHasChanged();
+    }
+
+}
