@@ -1,0 +1,40 @@
+﻿<div class="mobile-commodity-card">
+
+    <div class="mobile-commodity-icon">
+        🌾
+    </div>
+
+    <div class="mobile-commodity-name">
+
+        <strong>
+            @Commodity.Commodity
+        </strong>
+
+        <small>
+            @Commodity.Market
+        </small>
+
+    </div>
+
+    <div class="mobile-commodity-price">
+
+        <strong>
+            TZS @Commodity.Price.ToString("N0")
+        </strong>
+
+        <small>
+            @Commodity.RecordedAt
+            .ToLocalTime()
+            .ToString("dd MMM")
+        </small>
+
+    </div>
+
+</div>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public PriceDto Commodity { get; set; } = default!;
+
+}

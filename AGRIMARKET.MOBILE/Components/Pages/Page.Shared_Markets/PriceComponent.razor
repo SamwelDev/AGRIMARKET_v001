@@ -1,0 +1,84 @@
+﻿@page "/price-component"
+@inject ILogger<PriceComponent> logger
+<PageTitle>AgriMarket|Kilimo/Biashara</PageTitle>
+
+<div class="mobile-price-card">
+
+    <div class="mobile-price-card-main">
+
+        <div class="mobile-price-card-icon">
+            🌽
+        </div>
+
+        <div class="mobile-price-card-info">
+
+            <strong>
+                @Price.Commodity
+            </strong>
+
+            <span>
+                @Price.Market
+            </span>
+
+            <small>
+                @Price.Region
+                @if (!string.IsNullOrWhiteSpace(Price.District))
+                {
+                    <span> • @Price.District</span>
+                }
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="mobile-price-card-value">
+
+        <strong>
+            TZS @Price.Price.ToString("N0")
+        </strong>
+
+        <small>
+            / @Price.Unit
+        </small>
+
+    </div>
+
+
+    <div class="mobile-price-card-footer">
+
+        <span>
+            Min
+            <strong>
+                @Price.MinPrice.ToString("N0")
+            </strong>
+        </span>
+
+        <span>
+            Max
+            <strong>
+                @Price.MaxPrice.ToString("N0")
+            </strong>
+        </span>
+
+        <span>
+            @Price.RecordedAt.ToLocalTime()
+            .ToString("dd MMM yyyy")
+        </span>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    [Parameter, EditorRequired]
+    public PriceDto Price { get; set; } = default!;
+    protected override async Task OnInitializedAsync()
+    {
+        logger.LogInformation("PriceComponent initialized with Price: {@Price}", Price);
+    }
+
+}

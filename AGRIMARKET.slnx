@@ -13,6 +13,11 @@
   <Folder Name="/Src/Src.Presentation/Src.API/">
     <Project Path="AGRIMARKET.API/AGRIMARKET.API.csproj" />
   </Folder>
+  <Folder Name="/Src/Src.Presentation/Src.Mobile/">
+    <Project Path="AGRIMARKET.MOBILE/AGRIMARKET.MOBILE.csproj" Id="bd48e16d-f7a4-44ec-a301-c90ae7d08f05">
+      <Deploy Solution="Debug|*" />
+    </Project>
+  </Folder>
   <Folder Name="/Src/Src.Presentation/Src.Web/">
     <Project Path="AGRIMARKET.WEB/AGRIMARKET.WEB.csproj" Id="8117aeb3-3d6d-41aa-978e-8a020f4bb562" />
   </Folder>

@@ -1,0 +1,64 @@
+﻿@inject ILogger<MarketComponent> logger
+<div class="mobile-market-card">
+
+    <div class="mobile-market-card-left">
+
+        <div class="mobile-market-icon">
+            <span><i class="bi bi-graph-up fs-3 text-success"></i></span>
+        </div>
+
+        <div>
+
+            <strong>
+                @Price.Commodity
+            </strong>
+
+            <small>
+                @Price.Market
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="mobile-market-card-right">
+
+        <strong>
+            TZS @Price.Price.ToString("N0")
+        </strong>
+
+
+        @if (ChangePercentage > 0)
+        {
+            <span class="mobile-price-up">
+                ↑ @ChangePercentage.ToString("0.0")%
+            </span>
+        }
+        else if (ChangePercentage < 0)
+        {
+            <span class="mobile-price-down">
+                ↓ @Math.Abs(ChangePercentage)
+                    .ToString("0.0")%
+            </span>
+        }
+        else
+        {
+            <span class="mobile-price-neutral">
+                — 0.0%
+            </span>
+        }
+
+    </div>
+
+</div>
+
+
+@code {
+
+    [Parameter, EditorRequired]
+    public PriceDto Price { get; set; } = default!;
+    [Parameter]
+    public decimal ChangePercentage { get; set; }
+
+}

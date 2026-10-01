@@ -1,0 +1,563 @@
+﻿@page "/home"
+@using AGRIMARKET.MOBILE.Components.Pages.Page_Shared_Markets
+@inject ILogger<Home> Logger
+@inject HelperState State
+
+@layout MainLayout
+
+<PageTitle>AgriMarket | Home</PageTitle>
+
+<div class="mobile-home">
+
+    
+    <section class="mobile-home-header">
+
+        <div>
+            <span class="mobile-greeting">
+                AgriMarket Tanzania
+            </span>
+
+            <h1>
+                Know the Price.
+            </h1>
+
+            <p>
+                Find the right market for your produce.
+            </p>
+        </div>
+
+        <div class="mobile-live-status">
+
+            <span class="live-dot"></span>
+
+            <span>
+                Live
+            </span>
+
+        </div>
+
+    </section>
+
+
+   
+
+    <section class="mobile-section">
+
+        <div class="mobile-section-header">
+
+            <div>
+                <h2>What do you want to do?</h2>
+
+                <small>
+                    Agriculture market tools
+                </small>
+            </div>
+
+        </div>
+
+
+        <div class="mobile-quick-actions">
+
+            <button class="mobile-action-card"
+                    @onclick="GoToPrices">
+
+                <div class="mobile-action-icon">
+                   <span><i class="bi bi-currency-dollar text-success fs-3"></i></span> 
+                </div>
+
+                <div>
+                    <strong>Market Prices</strong>
+
+                    <small>
+                        View latest prices
+                    </small>
+                </div>
+
+            </button>
+
+
+            <button class="mobile-action-card"
+                    @onclick="GoToFindMarket">
+
+                <div class="mobile-action-icon">
+                    <span><i class="bi bi-geo-alt text-success fs-3"></i></span>
+                </div>
+
+                <div>
+                    <strong>Find Market</strong>
+
+                    <small>
+                        Find profitable markets
+                    </small>
+                </div>
+
+            </button>
+
+
+            <button class="mobile-action-card"
+                    @onclick="GoToTrends">
+
+                <div class="mobile-action-icon">
+                    <span><i class="bi bi-graph-up text-success fs-3"></i></span>   
+                </div>
+
+                <div>
+                    <strong>Price Trends</strong>
+
+                    <small>
+                        Track price movement
+                    </small>
+                </div>
+
+            </button>
+
+
+            <button class="mobile-action-card"
+                    @onclick="GoToMore">
+
+                <div class="mobile-action-icon">
+                   <span><i class="bi bi-three-dots text-success fs-3"></i></span>  
+                </div>
+
+                <div>
+                    <strong>More</strong>
+
+                    <small>
+                        Settings & help
+                    </small>
+                </div>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+   
+
+    <section class="mobile-section">
+        <div class="mobile-section-header">
+
+            <div>
+                <h2>Market Overview</h2>
+
+                <small>
+                    Based on latest available data
+                </small>
+            </div>
+
+        </div>
+
+
+        <div class="mobile-summary-grid">
+
+            <div class="mobile-summary-card">
+
+                <span class="mobile-summary-icon">
+                    <span><i class="bi bi-currency-dollar text-success fs-3"></i></span>
+                </span>
+
+                <strong>
+                    TZS @AveragePrice.ToString("N0")
+                </strong>
+
+                <small>
+                    Average Price
+                </small>
+
+            </div>
+
+
+            <div class="mobile-summary-card">
+
+                <span class="mobile-summary-icon">
+                    <span><i class="bi bi-cup-straw text-success fs-3"></i></span>
+                </span>
+
+                <strong>
+                    @CommodityCount
+                </strong>
+
+                <small>
+                    Commodities
+                </small>
+
+            </div>
+
+
+            <div class="mobile-summary-card">
+
+                <span class="mobile-summary-icon">
+                    <span><i class="bi bi-shop text-success fs-3"></i></span>
+                </span>
+
+                <strong>
+                    @MarketCount
+                </strong>
+
+                <small>
+                    Markets
+                </small>
+
+            </div>
+
+
+            <div class="mobile-summary-card">
+
+                <span class="mobile-summary-icon">
+                   <span><i class="bi bi-geo text-success fs-3"></i></span>
+                </span>
+
+                <strong>
+                    @RegionCount
+                </strong>
+
+                <small>
+                    Regions
+                </small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+   
+
+    <section class="mobile-section">
+
+        <div class="mobile-section-header">
+
+            <div>
+                <h2>Popular Commodities</h2>
+
+                <small>
+                    Latest market prices
+                </small>
+            </div>
+
+            <button class="mobile-see-all"
+                    @onclick="GoToPrices">
+
+                See all
+
+            </button>
+
+        </div>
+
+
+        <div class="mobile-horizontal-list">
+
+            @foreach (var commodity in PopularCommodities)
+            {
+                <CommoditComponent Commodity="commodity" />
+            }
+
+        </div>
+
+    </section>
+
+
+  
+
+    <section class="mobile-section">
+
+        <div class="mobile-section-header">
+
+            <div>
+                <h2>Latest Prices</h2>
+
+                <small>
+                    Recent agriculture prices
+                </small>
+            </div>
+
+            <button class="mobile-see-all"
+                    @onclick="GoToPrices">
+
+                See all
+
+            </button>
+
+        </div>
+
+
+        <div class="mobile-price-list">
+
+            @if (LatestPrices.Any())
+            {
+                @foreach (var price in LatestPrices)
+                {
+                    <PriceComponent Price="price" />
+                }
+            }
+            else
+            {
+                <div class="mobile-empty-state">
+                    No price data available.
+                </div>
+            }
+
+        </div>
+
+    </section>
+
+
+  
+
+    <section class="mobile-section">
+
+        <div class="mobile-section-header">
+
+            <div>
+                <h2>Find the Best Market</h2>
+
+                <small>
+                    Compare prices and transport distance
+                </small>
+            </div>
+
+        </div>
+
+
+        <div class="mobile-find-market-card">
+
+            <div class="mobile-find-market-icon">
+                <span><i class="bi bi-car-front text-success fs-3"></i></span>
+            </div>
+
+            <div class="mobile-find-market-content">
+
+                <strong>
+                    Sell where you can earn more
+                </strong>
+
+                <p>
+                    Select your commodity, quantity and
+                    origin market to compare potential
+                    revenue across markets.
+                </p>
+
+                <button class="mobile-primary-button"
+                        @onclick="GoToFindMarket">
+
+                    Find Profitable Markets
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    @if (MarketTicker.Any())
+    {
+        <section class="mobile-section">
+
+            <div class="mobile-section-header">
+
+                <div>
+                    <h2>Market Movement</h2>
+
+                    <small>
+                        Recent commodity changes
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="mobile-market-list">
+
+                @foreach (var item in MarketTicker)
+                {
+                    <MarketComponent Price="item"ChangePercentage="@GetChangePercentage(item)" />
+                }
+
+            </div>
+
+        </section>
+    }
+
+
+
+    <div class="mobile-last-updated">
+
+        <span class="live-dot"></span>
+
+        <span>
+            Last updated
+        </span>
+
+        <strong>
+            @LastUpdatedText
+        </strong>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    
+    private void GoToPrices()
+    {
+        Navigation.NavigateTo("/price-component");
+    }
+
+    private void GoToFindMarket()
+    {
+        Navigation.NavigateTo("/find-market");
+    }
+
+    private void GoToTrends()
+    {
+        Navigation.NavigateTo("/trends");
+    }
+
+    private void GoToMore()
+    {
+        Navigation.NavigateTo("/more");
+    }
+
+
+    private List<PriceDto> Prices =>State.Prices ?? [];
+    private List<RegionDto> Regions =>
+        State.Regions ?? [];
+
+
+   
+
+    private IEnumerable<PriceDto> LatestPrices =>
+        Prices
+            .GroupBy(x => new
+            {
+                Commodity = x.Commodity?.Trim(),
+                Market = x.Market?.Trim()
+            })
+            .Select(g =>
+                g.OrderByDescending(x => x.RecordedAt)
+                 .First())
+            .OrderByDescending(x => x.RecordedAt)
+            .Take(6);
+
+
+   
+    private IEnumerable<PriceDto> PopularCommodities =>
+        Prices
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.Commodity))
+            .GroupBy(x => x.Commodity)
+            .Select(g =>
+                g.OrderByDescending(x => x.RecordedAt)
+                 .First())
+            .OrderByDescending(x => x.RecordedAt)
+            .Take(6);
+
+
+    
+    private IEnumerable<PriceDto> MarketTicker =>
+        Prices
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.Commodity))
+            .GroupBy(x => x.Commodity)
+            .Select(g =>
+                g.OrderByDescending(x => x.RecordedAt)
+                 .First())
+            .OrderByDescending(x => x.RecordedAt)
+            .Take(5);
+
+
+  
+    private decimal AveragePrice =>
+        Prices.Any()
+            ? Prices.Average(x => x.Price)
+            : 0;
+
+
+    private int CommodityCount =>
+        Prices
+            .Where(x => !string.IsNullOrWhiteSpace(x.Commodity))
+            .Select(x => x.Commodity!.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count();
+
+
+    private int MarketCount =>
+        Prices
+            .Where(x => !string.IsNullOrWhiteSpace(x.Market))
+            .Select(x => x.Market!.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count();
+
+
+    private int RegionCount =>
+        Prices
+            .Where(x => !string.IsNullOrWhiteSpace(x.Region))
+            .Select(x => x.Region!.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count();
+
+
+    
+    private decimal GetChangePercentage(PriceDto item)
+    {
+        var previous =
+            Prices
+                .Where(x =>
+                    string.Equals(
+                        x.Commodity,
+                        item.Commodity,
+                        StringComparison.OrdinalIgnoreCase)
+                    &&
+                    x.RecordedAt < item.RecordedAt)
+                .OrderByDescending(x => x.RecordedAt)
+                .FirstOrDefault();
+
+
+        if (previous == null || previous.Price == 0)
+            return 0;
+
+
+        return
+            ((item.Price - previous.Price)
+            / previous.Price) * 100;
+    }
+
+
+    // ============================================================
+    // LAST UPDATED
+    // ============================================================
+
+    private string LastUpdatedText
+    {
+        get
+        {
+            if (Prices.Count == 0)
+                return "No data";
+
+
+            var latest =
+                Prices.Max(x => x.RecordedAt);
+
+
+            return latest.ToLocalTime()
+                .ToString("dd MMM yyyy, HH:mm");
+        }
+    }
+
+
+    // ============================================================
+    // NAVIGATION SERVICE
+    // ============================================================
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+}

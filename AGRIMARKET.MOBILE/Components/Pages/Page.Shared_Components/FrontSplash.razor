@@ -1,0 +1,228 @@
+﻿@page "/"
+@page "/splash"
+@inject NavigationManager Nav
+@inject IApiMarketService Service
+@inject HelperState MarketState
+@inject ILogger<FrontSplash> Logger
+
+<PageTitle>AgriMarket Tanzania</PageTitle>
+
+<div class="mobile-splash">
+
+    <div class="mobile-splash-content">
+
+        <div class="mobile-splash-logo">
+            🌾
+        </div>
+
+        <h1>AgriMarket</h1>
+
+        <span class="mobile-splash-country">
+            TANZANIA
+        </span>
+
+        <div class="mobile-splash-divider"></div>
+
+        <h2>
+            Know the Price.<br />
+            Find the Market.
+        </h2>
+
+        <p>
+            Agricultural market information to help
+            farmers make better selling decisions.
+        </p>
+
+
+        <div class="mobile-splash-features">
+
+            <div class="mobile-splash-feature">
+
+                <span><i class="bi bi-corn text-success fs-3"></i></span>
+
+                <div>
+                    <strong>Market Prices</strong>
+                    <small>Latest crop prices</small>
+                </div>
+
+            </div>
+
+
+            <div class="mobile-splash-feature">
+
+                <span><i class="bi bi-graph-up text-success fs-3"></i></span>
+
+                <div>
+                    <strong>Price Trends</strong>
+                    <small>Track market changes</small>
+                </div>
+
+            </div>
+
+
+            <div class="mobile-splash-feature">
+
+                <span><i class="bi bi-geo-alt text-success fs-3"></i></span>
+
+                <div>
+                    <strong>Find Markets</strong>
+                    <small>Compare markets</small>
+                </div>
+
+            </div>
+
+
+            <div class="mobile-splash-feature">
+
+                <span><i class="bi bi-car-front text-success fs-3"></i></span>
+
+                <div>
+                    <strong>Profitability</strong>
+                    <small>Estimate revenue</small>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        @if (loading)
+        {
+            <div class="mobile-splash-loading">
+
+                <span>
+                    Preparing market data...
+                </span>
+
+                <div class="mobile-loading-track">
+                    <div class="mobile-loading-bar"></div>
+                </div>
+
+            </div>
+        }
+
+
+        @if (!string.IsNullOrWhiteSpace(loadError))
+        {
+            <div class="mobile-error">
+
+                <p>@loadError</p>
+
+                <button @onclick="LoadDataAsync">
+                    Retry
+                </button>
+
+            </div>
+        }
+
+
+        <small class="mobile-splash-footer">
+
+            Powered by AgriMarket Tanzania
+            @DateTime.Now.Year <i class="bi bi-c-circle text-success"></i>
+
+        </small>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    private bool loading = true;
+
+    private string? loadError;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+
+    private async Task LoadDataAsync()
+    {
+        if (!loading && MarketState.IsLoaded)
+        {
+            Nav.NavigateTo("/home");
+
+            return;
+        }
+
+
+        try
+        {
+            loading = true;
+
+            loadError = null;
+
+
+            Logger.LogInformation(
+                "Loading AgriMarket mobile data...");
+
+
+            var pricesTask =
+                Service.GetPricesAsync(
+                    pageNum: 1,
+                    pageSize: 100);
+
+
+            var regionsTask =
+                Service.GetRegionsAsync(
+                    pageNum: 1,
+                    pageSize: 50);
+
+
+            await Task.WhenAll(
+                pricesTask,
+                regionsTask);
+
+
+            var pricesResponse =
+                await pricesTask;
+
+
+            var regionsResponse =
+                await regionsTask;
+
+
+            MarketState.Prices =
+                pricesResponse?.Data ?? [];
+
+
+            MarketState.Regions =
+                regionsResponse?.Data ?? [];
+
+
+            MarketState.LoadedAt =
+                DateTimeOffset.Now;
+
+
+            MarketState.IsLoaded = true;
+
+
+            await Task.Delay(800);
+
+
+            Nav.NavigateTo(
+                "/home",
+                replace: true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(
+                ex,
+                "Failed to load AgriMarket mobile data.");
+
+
+            loadError =
+                "Unable to load market data. Please try again.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+}

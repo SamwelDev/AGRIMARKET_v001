@@ -1,0 +1,53 @@
+﻿@inject NavigationManager Nav
+
+<nav class="mobile-bottom-nav">
+
+    <button class="@GetActiveClass("/home")"
+            @onclick='() => GoToPage("/home")'>
+        <i class="bi bi-house-fill"></i>
+        <span>Home</span>
+    </button>
+
+    <button class="@GetActiveClass("/price-component")"
+            @onclick='() => GoToPage("/price-component")'>
+        <i class="bi bi-cash-stack"></i>
+        <span>Prices</span>
+    </button>
+
+    <button class="@GetActiveClass("/find-market")"
+            @onclick='() => GoToPage("/find-market")'>
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Market</span>
+    </button>
+
+    <button class="@GetActiveClass("/trends")"
+            @onclick='() => GoToPage("/trends")'>
+        <i class="bi bi-graph-up"></i>
+        <span>Trends</span>
+    </button>
+
+    <button class="@GetActiveClass("/more")"
+            @onclick='() => GoToPage("/more")'>
+        <i class="bi bi-three-dots"></i>
+        <span>More</span>
+    </button>
+
+</nav>
+
+@code {
+    private void GoToPage(string url)
+    {
+        Nav.NavigateTo(url);
+    }
+
+    private string GetActiveClass(string url)
+    {
+        var current = Nav.ToBaseRelativePath(Nav.Uri);
+
+        return current.Equals(
+            url.TrimStart('/'),
+            StringComparison.OrdinalIgnoreCase)
+            ? "active"
+            : "";
+    }
+}
