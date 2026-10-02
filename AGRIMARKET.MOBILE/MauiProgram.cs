@@ -19,18 +19,26 @@ namespace AGRIMARKET.MOBILE
                 });
 
             builder.Services.AddMauiBlazorWebView();
-            builder.Services.AddScoped(opt => new HttpClient
+            builder.Services.AddScoped(_ =>
             {
-                BaseAddress = new Uri("https://localhost:7064/")
+                var handler = new HttpClientHandler();
+
+#if DEBUG
+                handler.ServerCertificateCustomValidationCallback =
+                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+#endif
+
+                return new HttpClient(handler)
+                {
+                    BaseAddress = new Uri("https://192.168.0.119:7064/")
+                };
             });
+
             builder.Services.AddScoped<IApiMarketService, ApiMarketService>();
             builder.Services.AddScoped<ThemeWrapper>();
             builder.Services.AddScoped<HelperState>();
-#if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
-#endif
-
+            builder.Logging.AddDebug();
             return builder.Build();
         }
     }

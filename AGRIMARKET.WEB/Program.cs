@@ -15,7 +15,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped(opt => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7064/")
+    BaseAddress = new Uri("https://192.168.0.119:7064/")
 }); 
 builder.Services.AddScoped<IApiMarketService, ApiMarketService>();
 builder.Services.AddScoped<ThemeWrapper>();
