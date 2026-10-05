@@ -2,6 +2,7 @@ using AGRIMARKET.APPLICATION.APPLICATION.IS.IS.EXTAPI;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.DI;
 using AGRIMARKET.INFRASTRUCTURE.INFRA.SV;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,7 +46,7 @@ builder.Services.AddRateLimiter(opt =>
         limiter.Window = TimeSpan.FromMinutes(1);
         limiter.PermitLimit = 100;
         limiter.QueueLimit = 0;
-        limiter.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+        limiter.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
     opt.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
@@ -55,18 +56,13 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 app.UseCors("BlazorPolicy");
 
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

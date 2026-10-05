@@ -27,12 +27,8 @@
             <div class="dashboard-filters">
                 <div class="filter-group">
                     <label>Region</label>
-
-                    <select @bind="selectedRegion"
-                            @bind:after="RegionChanged">
-
+                    <select @bind="selectedRegion" @bind:after="RegionChanged">
                         <option value="">All regions</option>
-
                         @foreach (var region in Regions)
                         {
                             <option value="@region">
@@ -59,11 +55,8 @@
 
                 <div class="filter-group">
                     <label>Commodity</label>
-
                     <select @bind="selectedCommodity">
-
                         <option value="">All commodities</option>
-
                         @foreach (var commodity in Commodities)
                         {
                             <option value="@commodity">
@@ -76,13 +69,10 @@
 
             </div>
             <div class="summary-grid">
-
                 <div class="summary-card">
-
                     <div class="summary-value">
                         TZS @AverageMaxPrice.ToString("N0")/=
                     </div>
-
                     <div class="summary-label">
                         Avg Max Price
                     </div>
@@ -91,11 +81,9 @@
 
 
                 <div class="summary-card">
-
                     <div class="summary-value">
                         TZS @AverageMinPrice.ToString("N0")/=
                     </div>
-
                     <div class="summary-label">
                         Avg Min Price
                     </div>
@@ -106,7 +94,6 @@
                     <div class="summary-value commodity-value">
                         @TopCommodity
                     </div>
-
                     <div class="summary-label">
                         Top Commodity
                     </div>
@@ -133,12 +120,10 @@
                         <h6>
                             Find the Best Market
                         </h6>
-
                         <small class="small-word">
                             Compare market prices and road distance for your commodity
                         </small>
                     </div>
-
                     <div class="trend-status">
                         <span class="live-dot"></span>
                         MARKET ANALYSIS
@@ -152,15 +137,13 @@
                             <option value="0">Select commodity</option>
                             @foreach (var commodity in prices.Where(x => x.CommodityId > 0).GroupBy(x => new { x.CommodityId, x.Commodity }).OrderBy(x => x.Key.Commodity))
                             {
-                                <option value="@commodity.Key.CommodityId">
-                                    @commodity.Key.Commodity
-                                </option>
+                                <option value="@commodity.Key.CommodityId">@commodity.Key.Commodity</option>
                             }
                         </select>
                     </div>
 
                     <div class="filter-group">
-                        <label>Quantity (KG)</label>
+                        <label>Quantity (Kg)</label>
                         <input type="number" min="1" class="me-3" @bind="profitQuantity" />
                     </div>
 
@@ -172,7 +155,6 @@
                             <option value="0">
                                 Select origin market
                             </option>
-
                             @foreach (var market in OriginMarkets)
                             {
                                 <option value="@market.Id">
@@ -182,7 +164,6 @@
 
                         </select>
                     </div>
-
                     <button class="btn btn-outline-dark btn-sm rounded-circle d-flex align-items-center justify-content-center p-0 btn-round" @onclick="FindProfitableMarketsAsync" disabled="@profitLoading" title="Find Markets">
                         @if (profitLoading)
                         {
@@ -207,29 +188,24 @@
                 @if (profitResults.Any())
                 {
                     <div class="profitability-results mt-4">
-
                         <div class="profitability-result-header">
                             <div>
                                 <strong>Market Opportunities</strong>
-
                                 <small>
                                     @profitQuantity.ToString("N0") KG
                                 </small>
                             </div>
-
                             <span>
                                 @profitResults.Count markets
                             </span>
                         </div>
 
                         <div class="table-responsive">
-
                             <table class="table">
-
                                 <thead>
                                     <tr>
                                         <th>Market</th>
-                                        <th>Price / KG</th>
+                                        <th>Price / Kg</th>
                                         <th>Distance</th>
                                         <th>Travel Time</th>
                                         <th>Gross Revenue</th>
@@ -242,7 +218,6 @@
                                     @foreach (var market in profitResults)
                                     {
                                         <tr>
-
                                             <td>
                                                 <strong>
                                                     @market.MarketName
@@ -308,10 +283,7 @@
 
                     @if (FilteredPrices.Any())
                     {
-                        var trendData = FilteredPrices
-                            .OrderBy(x => x.RecordedAt)
-                            .TakeLast(12)
-                            .ToList();
+                        var trendData = FilteredPrices.OrderBy(x => x.RecordedAt).TakeLast(12).ToList();
                         var maxChartPrice = trendData
                             .SelectMany(x => new[]
                             { x.MinPrice,x.Price, x.MaxPrice
@@ -404,8 +376,8 @@
                             No trend data available for the selected filters.
                         </div>
                     }
-
                 </section>
+
                 <section class="dashboard-panel regional-price-panel">
                     <div class="regional-panel-header">
                         <div>
@@ -428,49 +400,34 @@
                     {
                         <div class="regional-chart-content">
                             <div class="regional-donut-wrapper">
-
                                 <div class="regional-donut-hover">
-
                                     <div class="regional-donut"style="@RegionalDonutStyle">
-
                                         <div class="regional-donut-center">
-
                                             <span>Total Markets</span>
-
                                             <strong>
                                                 @RegionalMarketCount
                                             </strong>
-
                                             <small>
                                                 Regions
                                             </small>
-
                                         </div>
 
                                     </div>
 
                                     <div class="regional-donut-tooltip">
-
                                         <strong>
                                             Regional Price Distribution
                                         </strong>
-
                                         @foreach (var region in RegionalPriceData)
                                         {
                                             <div class="regional-tooltip-row">
-
                                                 <span class="regional-tooltip-region">
-
                                                     <i style="background:@region.Color"></i>
-
                                                     @region.Region
-
                                                 </span>
-
                                                 <strong>
                                                     @region.Share.ToString("0")%
                                                 </strong>
-
                                             </div>
                                         }
 
@@ -479,25 +436,20 @@
                                 </div>
 
                             </div>
-                            <div class="regional-data">
 
+                            <div class="regional-data">
                                 <div class="regional-data-header">
                                     <span>Region</span>
-                                    <span>Price Range (TZS)</span>
+                                    <span>Price Range (Tzs)</span>
                                     <span>Share</span>
                                 </div>
-
-
                                 @foreach (var region in RegionalPriceData)
                                 {
                                     <div class="regional-data-row">
-
                                         <div class="regional-name">
-
                                             <span class="region-color"
                                                   style="background:@region.Color">
                                             </span>
-
                                             <strong>
                                                 @region.Region
                                             </strong>
@@ -725,32 +677,21 @@
             loading = false;
         }
     }
-    private IEnumerable<PriceDto> FilteredPrices =>
-     prices.Where(x => (string.IsNullOrWhiteSpace(selectedRegion) || string.Equals(x.Region?.Trim(),selectedRegion.Trim(),StringComparison.OrdinalIgnoreCase))
+    private IEnumerable<PriceDto> FilteredPrices => prices.Where(x => (string.IsNullOrWhiteSpace(selectedRegion) || string.Equals(x.Region?.Trim(),selectedRegion.Trim(),StringComparison.OrdinalIgnoreCase))
         &&(string.IsNullOrWhiteSpace(selectedMarket)||string.Equals(x.Market?.Trim(),selectedMarket.Trim(),StringComparison.OrdinalIgnoreCase))
 
             &&
             (string.IsNullOrWhiteSpace(selectedCommodity)|| string.Equals(x.Commodity?.Trim(),selectedCommodity.Trim(),StringComparison.OrdinalIgnoreCase)
             )
         );
-
-
     
-    private decimal AverageMaxPrice =>
-        FilteredPrices.Any()
-            ? FilteredPrices.Average(x => x.MaxPrice)
-            : 0;
+    private decimal AverageMaxPrice => FilteredPrices.Any()? FilteredPrices.Average(x => x.MaxPrice): 0;
 
 
-    private decimal AverageMinPrice =>
-        FilteredPrices.Any()
-            ? FilteredPrices.Average(x => x.MinPrice)
-            : 0;
+    private decimal AverageMinPrice => FilteredPrices.Any()? FilteredPrices.Average(x => x.MinPrice): 0;
 
 
-    private string TopCommodity =>
-        FilteredPrices
-            .Where(x =>
+    private string TopCommodity =>FilteredPrices.Where(x =>
                 !string.IsNullOrWhiteSpace(x.Commodity))
             .GroupBy(x => x.Commodity)
             .OrderByDescending(x => x.Count())
@@ -768,10 +709,7 @@
             .Count();
 
 
-    // ============================================================
-    // REGION CHANGE
-    // ============================================================
-
+   
     private void RegionChanged()
     {
         selectedMarket = "";
@@ -780,29 +718,11 @@
     }
 
 
-    // ============================================================
-    // MARKETS
-    // ============================================================
-
-    private IEnumerable<string> Markets =>
-        regions
-
-            .Where(r =>
-                string.IsNullOrWhiteSpace(selectedRegion)
-                ||
-                string.Equals(
-                    r.Name?.Trim(),
-                    selectedRegion.Trim(),
-                    StringComparison.OrdinalIgnoreCase))
-
+    private IEnumerable<string> Markets => regions.Where(r => string.IsNullOrWhiteSpace(selectedRegion)||string.Equals(r.Name?.Trim(),selectedRegion.Trim(),StringComparison.OrdinalIgnoreCase))
             .SelectMany(r => r.Districts)
-
             .SelectMany(d => d.Markets)
-
             .Select(m => m.Name)
-
-            .Where(x =>
-                !string.IsNullOrWhiteSpace(x))
+            .Where(x => !string.IsNullOrWhiteSpace(x))
 
             .Distinct(StringComparer.OrdinalIgnoreCase)
 
@@ -828,11 +748,7 @@
     private IEnumerable<string> Commodities =>prices.Select(x => x.Commodity).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x);
 
 
-       private IEnumerable<MarketOptionDto> OriginMarkets =>
-        regions
-
-            .SelectMany(r => r.Districts)
-
+   private IEnumerable<MarketOptionDto> OriginMarkets =>regions.SelectMany(r => r.Districts)
             .SelectMany(d => d.Markets)
 
             .Where(m =>
@@ -1007,23 +923,8 @@
         }
     }
 
+    private int RegionalMarketCount =>FilteredPrices.Where(x =>!string.IsNullOrWhiteSpace(x.Market)).Select(x => x.Market).Distinct(StringComparer.OrdinalIgnoreCase).Count();
 
-    
-    private int RegionalMarketCount =>
-        FilteredPrices
-
-            .Where(x =>
-                !string.IsNullOrWhiteSpace(x.Market))
-
-            .Select(x => x.Market)
-
-            .Distinct(
-                StringComparer.OrdinalIgnoreCase)
-
-            .Count();
-
-
-    
 
     private string RegionalDonutStyle
     {
